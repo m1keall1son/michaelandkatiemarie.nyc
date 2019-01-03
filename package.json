@@ -10,7 +10,8 @@
   "license": "ISC",
   "dependencies": {
     "express": "^4.16.4",
-    "pug": "^2.0.3"
+    "pug": "^2.0.3",
+    "sqlite": "^3.0.0"
   },
   "repository": {
     "type": "git",

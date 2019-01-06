@@ -1,18 +1,16 @@
-const express = require('express')
-const app = express()
-const port = 3000
-const path = require("path")
+let logger = require('./logger')
+let log = logger()
 
-app.set('view engine', 'pug')
-app.use(express.static('public'))
+let createApp = require('./app')
+let app = createApp()
 
-app.get('/', (req, res) => {
-	//res.render('index')
-	res.sendFile(path.join(__dirname+'/index.html'))
-})
+const PORT = process.env.PORT || 12345
 
-app.get('/info', (req, res) => {
-	res.render('info')
-})
+const production = process.env.NODE_ENV == "production"
 
-app.listen(port, 'localhost', () => console.log('listing on http://localhost:3000'))
+var config = {};
+
+log.setLogLevel(logger.LogLevel.VERBOSE)
+
+app.configure(config)
+app.run(PORT)

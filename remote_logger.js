@@ -2,13 +2,8 @@ const logger = require('./logger')
 const log = logger()
 const createAPI = require('./api')
 
-function createLoggerAPI(router) {
-
-	if(!router){
-		log.error("NO ROUTER PROVIDED TO CREATE REMOTE LOGGER.")
-		return;
-	}
-
+module.exports = () => { 
+	
 	let api = createAPI(router,'/log','Remote Logger API')
 
 	api.router.route('/level/:level')
@@ -143,5 +138,3 @@ function createLoggerAPI(router) {
 
 	return api
 }
-
-module.exports = (router) => { return createLoggerAPI(router) }

@@ -27,8 +27,8 @@ AppImpl.prototype.configure = function(config) {
 
 AppImpl.prototype.run = function(port) {
 	log.notice("------ BEGIN APP("+(production?"production":"dev")+") ------")
-	this.server.addApi(frontend(this.server.server,this.server.newRouter()))
-	this.server.addApi(guests(this.server.newRouter()))
+	this.server.addApi(frontend())
+	this.server.addApi(guests())
 	this.server.open(port)
 }
 

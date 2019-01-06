@@ -50,10 +50,6 @@ ServerImpl.prototype.addApi = function(api) {
 	this.apis.push(api)
 }
 
-ServerImpl.prototype.newRouter = function() {
-	return express.Router()
-}
-
 ServerImpl.prototype.isRunning = function() {
 	return this.serverRunning
 }

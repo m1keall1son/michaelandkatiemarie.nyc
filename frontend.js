@@ -16,14 +16,32 @@ var sessionCheckerMiddleware = (req, res, next) => {
     }    
 }
 
-function createFrontend(router) {
+module.exports = () => {
 
-	if(!router){
-		log.error("NO ROUTER PROVIDED TO CREATE Guest Frontend.")
-		return;
-	}
+	let server = require('./server')().server
+	//use cookies & sessions
+	var bodyParser = require('body-parser')
+	server.set('view engine', 'pug')
+	server.use(bodyParser.urlencoded({ extended: true }))
+	server.use(bodyParser.json())
+	server.use(require('cookie-parser')())
+	server.use(require('express-session')({
+		key: 'user_sid',
+		secret: 'thisisatopsecretsecret',
+		resave: false,
+		saveUninitialized: false,
+		cookie: { expires: 600000 }
+	}))
+		
+	//check for half eaten cookies...
+	server.use(function(req,res,next){
+		if(req.cookies.user_sid && !req.session.user){
+			res.clearCookie('user_sid')
+		}
+		next()
+	})
 
-	let api = createAPI(router,'/','Guest Frontend')
+ 	let api = createAPI('/','Guest Frontend')
 
 	api.router.route('/')
 		.get(sessionCheckerMiddleware, (req, res) => {
@@ -92,31 +110,4 @@ function createFrontend(router) {
 	api.router.use(express.static('public'))
 
 	return api
-}
-
-module.exports = (server, router) => {
-
-	//use cookies & sessions
-	var bodyParser = require('body-parser')
-	server.set('view engine', 'pug')
-	server.use(bodyParser.urlencoded({ extended: true }))
-	server.use(bodyParser.json())
-	server.use(require('cookie-parser')())
-	server.use(require('express-session')({
-		key: 'user_sid',
-		secret: 'thisisatopsecretsecret',
-		resave: false,
-		saveUninitialized: false,
-		cookie: { expires: 600000 }
-	}))
-		
-	//check for half eaten cookies...
-	server.use(function(req,res,next){
-		if(req.cookies.user_sid && !req.session.user){
-			res.clearCookie('user_sid')
-		}
-		next()
-	})
-
- 	return createFrontend(router)
 }

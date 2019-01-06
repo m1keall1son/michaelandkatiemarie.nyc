@@ -4,7 +4,7 @@ let log = logger()
 let createApp = require('./app')
 let app = createApp()
 
-const PORT = process.env.PORT || 12345
+const PORT = process.env.PORT || 3000
 
 const production = process.env.NODE_ENV == "production"
 

@@ -1,8 +1,10 @@
+const express = require('express')
+
 class API {
-	constructor(router,rootDir,name){
-		this.router = router
+	constructor(rootDir,name){
+		this.router = express.Router()
 		this.apiName = name
 		this.rootDir = rootDir
 	}
 }
-module.exports = (router,rootDir,name)=>{ return new API(router,rootDir,name) }
+module.exports = (rootDir,name)=>{ return new API(rootDir,name) }

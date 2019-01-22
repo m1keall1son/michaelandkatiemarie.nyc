@@ -1,16 +1,11 @@
-let logger = require('./logger')
-let log = logger()
+const UTILS = require('utils')
+const log = UTILS.logger()
 
-let createApp = require('./app')
-let app = createApp()
+const app = require('./wedding_app')()
 
-const PORT = process.env.PORT || 3000
-
-const production = process.env.NODE_ENV == "production"
-
-var config = {};
-
-log.setLogLevel(logger.LogLevel.VERBOSE)
+var config = {
+	port: process.env.PORT || 3000
+};
 
 app.configure(config)
-app.run(PORT)
+app.run()

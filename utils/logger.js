@@ -69,7 +69,20 @@ LoggerChannel.prototype.error = function() {
 		for(let i = 0; i < arguments.length; i++) {
 			message += String(arguments[i]);
 		}
-		console.log(style, header, message);
+		console.trace(style, header, message);
+	}
+};
+
+LoggerChannel.prototype.fatalError = function() {
+	if(arguments.length > 0){
+		let style = "\x1b[31m\x1b[40m%s\x1b[0m%s";
+		let header = "[ERROR]" + (this.channelName ? `[${this.channelName}]` : "");
+		let message = ' ';
+		for(let i = 0; i < arguments.length; i++) {
+			message += String(arguments[i]);
+		}
+		console.trace(style, header, message);
+		process.exit(1)
 	}
 };
 

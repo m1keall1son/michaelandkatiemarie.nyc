@@ -1,23 +1,16 @@
-const createAPI = require('./api')
-const db = require('./db')()
+const UTILS = require('utils')
+const get_app = require('./wedding_app')
+const app = get_app()
 
 module.exports = () => {
 
-	let api = createAPI('/guest','Guest Management API')
+	let api = new UTILS.API('/guest','Guest Management API')
 
 	api.router.route('/list')
 		.get((req, res) => {
-			if(!db.isConnected()){
-				log.error("NO DB CONNECTION")
-				res.status(500).json({error: "NO DATABASE CONNECTION"})
-			}
-			db.guestList((err,guests)=>{
-				if(err){
-					res.status(500).send(err)
-				}else{
-					res.send(guests)
-				}
-			})
+			app.guestList()
+				.then(guests=>res.send(guests))
+				.catch(error=>res.status(500).send(error))
 	    })
 	    
 	return api

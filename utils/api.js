@@ -7,4 +7,4 @@ class API {
 		this.rootDir = rootDir
 	}
 }
-module.exports = (rootDir,name)=>{ return new API(rootDir,name) }
+module.exports = API

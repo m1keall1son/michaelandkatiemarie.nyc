@@ -1,0 +1,29 @@
+html
+    head
+        title Register
+        link(rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous")
+
+    body.container
+        div.page-header
+            h1 Hi, please register your email
+
+        nav.navbar.navbar-default
+            nav.container-fluid
+                nav#bs-example-navbar-collapse-1.collapse.navbar-collapse
+                    ul.nav.navbar-nav
+                        li
+                            a(href="/") Home
+                    ul.nav.navbar-nav.navbar-right
+                        li
+                            a(href="/login") Log In 
+                        li
+                            a(href="/logout") Log Out
+
+        div.container.row
+            div.jumbotron.col-sm-4.pull-center
+                form(action="/register" method="post")
+                    div
+                        label Email:
+                        input(type="email" name="email")
+                    div
+                        input.btn.btn-primary(type="submit" value="Submit")

@@ -73,9 +73,9 @@ module.exports = () => {
  	let api = new UTILS.API('/','Guest Frontend')
 
 	api.router.route('/')
-		.get(sessionCheckerMiddleware, (req, res) => {
-			//res.sendFile(__dirname + '/public/index.html');
-			res.redirect('/login')
+		.get((req, res) => {
+			res.sendFile(__dirname + '/public/savethedate.html');
+			//res.redirect('/')
 		})
 
 	api.router.route('/register')

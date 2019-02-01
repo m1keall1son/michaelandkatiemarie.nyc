@@ -40,6 +40,7 @@ module.exports = () => {
 
 	let sessionstore = new SequelizeStore({
 		    db: sequelize,
+		    disableTouch: true,
 		    checkExpirationInterval: 60 * 60 * 1000, // The interval at which to cleanup expired sessions in milliseconds.
 	  		expiration: expiration // The maximum age (in milliseconds) of a valid session.
 		})

@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset=utf-8>
+		<title>SAVE THE DATE! Oct 18, 2019</title>
+		<link href="https://fonts.googleapis.com/css?family=Josefin+Sans" rel="stylesheet">
+		<style>
+/*			canvas { width: 100%; height: 100% }*/
+			html, body {
+			  height: 100%;
+			  margin: 0;
+			  font-family: 'Josefin Sans', sans-serif;
+
+			}
+			#content {
+			  min-height: 100%;
+			  text-align: center;
+			}
+			.content-inside {
+			  background-color: none;
+			  color: #222222;
+			  position: fixed;
+			  right: 100%;
+			  margin-right: -50px;
+			}
+			.footer {
+				color: #989898;
+			  	height: 50px;
+			  	margin-top: -50px;
+			  	background-color: none;
+			  	position: fixed;
+			  	text-align: center;
+			}
+			.center-h {
+			    position: absolute;
+			    width: 25%;
+			    left: 50%;
+			    margin-left: -12.5%;
+			}​
+			.center-v {
+			    position: absolute;
+			    height: 25%;
+			    top: 50%;
+			    margin-top: -12.5%; 
+			}​
+			.start-container {
+				height:100%;
+				position: relative;
+			}
+			.start {
+				text-align: center;
+				position: absolute;
+			    top: 50%;
+			    left: 50%;
+			    margin-right: -50%;
+			    transform: translate(-50%, -50%);
+			}
+			.hidden {
+				visibility: hidden;
+			}
+			.mute {
+			  position: relative;
+			  background-color: #222222;
+			  color: #989898;
+			}
+
+			.topright {
+			  position: absolute;
+			  top: 8px;
+			  right: 16px;
+			  font-size: 18px;
+			}
+		</style>
+		<script src="three.js"></script>
+		<script src="OBJLoader.js"></script>
+		<script src="OrbitControls.js"></script>
+		<script src="Sky.js"></script>
+		<script src="Tone.js"></script>
+		<!--Depthkit.js-->
+		<script src="Depthkit.js/build/depthkit.js"></script>
+	</head>
+	<body onmousemove="mouse(event)" ontouchmove="mouse(event)" onclick="run(event)">
+
+		<script id="pass-vs" type="x-shader/x-vertex">
+			varying vec2 vUv;
+			void main()	{
+				vUv = uv;
+				gl_Position = projectionMatrix * 
+                        modelViewMatrix * 
+                        vec4(position,1.0);
+			}
+		</script>
+
+		<script id="mask-fs" type="x-shader/x-fragment">
+			uniform vec2 u_radius;
+			varying vec2 vUv;
+			void main()	{
+				//float e1 =  ( vUv.x - 0.5 ) /  u_radius.x;
+			    //float e2 =  ( vUv.y - 0.5 ) /  u_radius.y;
+			    //float d  = (e1 * e1) + (e2 * e2);
+			   	//if(d < 1.0) discard;
+			   	if(vUv.x > u_radius.x && vUv.x < (1.0 - u_radius.x) && vUv.y > u_radius.y && vUv.y < (1.0 - u_radius.y)) discard;
+				gl_FragColor = vec4(1.0,1.0,1.0,1.0);
+			}
+		</script>
+
+		<script id="tex-fs" type="x-shader/x-fragment">
+			uniform sampler2D u_tex;
+			varying vec2 vUv;
+			void main()	{
+				gl_FragColor = texture(u_tex, vUv);
+			}
+		</script>
+
+		<script>
+			var started = false;
+			//will play as soon as it's loaded
+			var player = new Tone.Player({
+				"url" : "01 Come Fly With Me.m4a",
+				"autostart" : false,
+			}).toMaster();
+
+			var mouseEnabled = true;
+			var cardRot = 0;
+			var rotTarget = 0;
+			var postcard = { edge: null, bg: null, mask: null, us: null, back: null, buildings: null, bridge: null }
+
+			var depthkit;
+			var character;
+			var rotationStep = Math.PI / 9.0;
+			
+			var scene = new THREE.Scene();
+			scene.background = new THREE.Color( 0xffffff );
+			var camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.01, 1000000 );
+
+			camera.position.z = 20
+
+			var renderer = new THREE.WebGLRenderer({antialias:true});
+			renderer.setPixelRatio( window.devicePixelRatio );
+			renderer.setSize( window.innerWidth, window.innerHeight );
+
+			var loader = new THREE.TextureLoader();
+
+			loader.load(
+				'frame.png',
+				function ( texture ) {
+					texture.anisotropy = renderer.capabilities.getMaxAnisotropy();
+					texture.minFilter = THREE.LinearFilter;
+					texture.mipmap = true;
+					postcard.edge = new THREE.Mesh( new THREE.PlaneGeometry( 15.58 * 2., 10 * 2. ), new THREE.MeshLambertMaterial({map:texture, transparent: true }) );
+					postcard.edge.material.depthWrite = false;
+					postcard.edge.material.depthTest = false;
+					postcard.edge.renderOrder = 4;
+					scene.add(postcard.edge);
+				},
+				undefined,
+				function () {
+					console.error( 'An error happened.' );
+				}
+			);
+
+			loader.load(
+				'bg.jpg',
+				function ( texture ) {
+					// use the image, e.g. draw part of it on a canvas
+					texture.anisotropy = renderer.capabilities.getMaxAnisotropy();
+					//texture.minFilter = THREE.LinearFilter;
+					texture.mipmap = true;
+					postcard.bg = new THREE.Mesh( new THREE.PlaneGeometry( 15.58 * 5., 10 * 5. ), new THREE.MeshLambertMaterial({map:texture}) );
+					postcard.bg.position.z = -20;
+					postcard.bg.renderOrder = 3;
+					scene.add( postcard.bg );
+				},
+				undefined,
+				function () {
+					console.error( 'An error happened.' );
+				}
+			);
+
+			loader.load(
+				'bridge.png',
+				function ( texture ) {
+					texture.anisotropy = renderer.capabilities.getMaxAnisotropy();
+					//texture.minFilter = THREE.LinearFilter;
+					texture.mipmap = true;
+					postcard.bridge = new THREE.Mesh( new THREE.PlaneGeometry( 15.58 * 3.2, 10 * 3.2 ), new THREE.MeshLambertMaterial({map:texture, transparent: true}) );
+					postcard.bridge.position.z = -8;
+					postcard.bridge.renderOrder = 3;
+					scene.add( postcard.bridge );
+				},
+				undefined,
+				function () {
+					console.error( 'An error happened.' );
+				}
+			);
+
+			loader.load(
+				'buildings.png',
+				function ( texture ) {
+					texture.anisotropy = renderer.capabilities.getMaxAnisotropy();
+					//texture.minFilter = THREE.LinearFilter;
+					texture.mipmap = true;
+					postcard.buildings = new THREE.Mesh( new THREE.PlaneGeometry( 15.58 * 4., 10 * 4. ), new THREE.MeshLambertMaterial({map:texture, transparent: true}) );
+					postcard.buildings.position.z = -13;
+					postcard.buildings.renderOrder = 3;
+					scene.add( postcard.buildings );
+				},
+				undefined,
+				function () {
+					console.error( 'An error happened.' );
+				}
+			);
+
+			loader.load(
+				'back.jpg',
+				function ( texture ) {
+					texture.anisotropy = renderer.capabilities.getMaxAnisotropy();
+					texture.minFilter = THREE.LinearFilter;
+					texture.mipmap = true;
+					postcard.back = new THREE.Mesh( new THREE.PlaneGeometry( 15.58 * 2., 10 * 2. ), new THREE.MeshLambertMaterial({ map:texture }) );
+					postcard.back.renderOrder = 4;
+					postcard.back.rotation.set(0,Math.PI,0)
+					scene.add(postcard.back);
+				},
+				undefined,
+				function () {
+					console.error( 'An error happened.' );
+				}
+			);
+
+			var maskUniforms = {
+				u_radius: { type: "ve2", value: new THREE.Vector2() }
+			};
+
+			maskUniforms.u_radius.value.x = 0.35;
+			maskUniforms.u_radius.value.y = 0.26 * 1.558;
+
+			var maskMaterial = new THREE.ShaderMaterial( {
+				uniforms: maskUniforms,
+				vertexShader: document.getElementById( 'pass-vs' ).textContent,
+				fragmentShader: document.getElementById( 'mask-fs' ).textContent
+			});
+
+			maskMaterial.colorWrite = false;
+
+			postcard.mask = new THREE.Mesh( new THREE.PlaneGeometry( 100, 100 ), maskMaterial );
+			postcard.mask.position.z = -0.1
+			postcard.mask.renderOrder = 1;
+			scene.add( postcard.mask );
+
+			var sky = new THREE.Sky();
+			sky.scale.setScalar( 450000 );
+			scene.add( sky );
+
+			//This will add a starfield to the background of a scene
+			var starsGeometry = new THREE.Geometry();
+
+			for ( var i = 0; i < 1000; i ++ ) {
+
+				var star = new THREE.Vector3();
+				star = new THREE.Vector3(Math.random() * 2 - 1, Math.random(), -Math.random());
+				star.normalize()
+				star.x *= Math.max(500, 1000 * Math.random())
+				star.y *= Math.max(500, 1000 * Math.random())
+				star.z *= Math.max(500, 1000 * Math.random())
+				starsGeometry.vertices.push( star );
+
+			}
+
+			var starsMaterial = new THREE.PointsMaterial( { color: 0xffffff } );
+
+			var starField = new THREE.Points( starsGeometry, starsMaterial );
+
+			scene.add( starField );
+
+			var effectController  = {
+				turbidity: 13.1,
+				rayleigh: 1.85,
+				mieCoefficient: 0.041,
+				mieDirectionalG: 0.8,
+				luminance: 1,
+				inclination: 0.505, // elevation / inclination
+				azimuth: 0.2689, // Facing front,
+				sun: false
+			};
+
+			var uniforms = sky.material.uniforms;
+			uniforms.turbidity.value = effectController.turbidity;
+			uniforms.rayleigh.value = effectController.rayleigh;
+			uniforms.luminance.value = effectController.luminance;
+			uniforms.mieCoefficient.value = effectController.mieCoefficient;
+			uniforms.mieDirectionalG.value = effectController.mieDirectionalG;
+
+			let sunpos = new THREE.Vector3(0,0,0);
+			let distance = 400000
+			var theta = Math.PI * ( effectController.inclination - 0.5 );
+			var phi = 2 * Math.PI * ( effectController.azimuth - 0.5 );
+			sunpos.x = distance * Math.cos( phi );
+			sunpos.y = distance * Math.sin( phi ) * Math.sin( theta );
+			sunpos.z = distance * Math.sin( phi ) * Math.cos( theta );
+			uniforms.sunPosition.value.copy(sunpos);
+
+			var directionalLight = new THREE.DirectionalLight( 0xFFFFFF, 1 );
+			directionalLight.position.set( 0, 100, 500 );
+			scene.add( directionalLight );
+
+			depthkit = new Depthkit();
+			depthkit.load(
+				'TAKE_01_29_19_53_24_Export_01_29_20_02_41.txt',
+				'TAKE_01_29_19_53_24_Export_01_29_20_02_41.mp4',
+				dkCharacter => {
+					dkCharacter.setMeshScalar(2)
+					postcard.us = dkCharacter;
+					//Position and rotation adjustments
+					dkCharacter.rotation.set( 0.3, Math.PI, 0);
+					// dkCharacter.rotation.y = Math.PI;
+					dkCharacter.position.set( 0, 1.0, -2.5 );
+					dkCharacter.scale.set(14,14,14)
+					// Depthkit video playback control
+					depthkit.video.muted = "muted"; // Necessary for auto-play in chrome now
+					depthkit.setLoop( true );
+					depthkit.play();
+					//Add the character to the scene
+					postcard.us.position.y = -3
+					scene.add(postcard.us);
+				});
+
+
+			var camTarget = {x: 0, y: 0};
+
+			function update()
+			{
+				camera.position.x  += (camTarget.x - camera.position.x) * 0.05
+				camera.position.y  += (camTarget.y - camera.position.y) * 0.05
+				camera.lookAt(0,0,0);
+
+				cardRot += (rotTarget - cardRot) * 0.06
+				if(postcard.edge && postcard.bg && postcard.mask && postcard.us && postcard.back && postcard.buildings && postcard.bridge)
+				{
+					postcard.edge.rotation.set(0, -cardRot,0)
+					postcard.bg.rotation.set(0, -cardRot,0)
+					postcard.buildings.rotation.set(0, -cardRot,0)
+					postcard.bridge.rotation.set(0, -cardRot,0)
+					postcard.mask.rotation.set(0, -cardRot,0)
+					postcard.us.rotation.set(0,Math.PI - cardRot,0)
+					postcard.back.rotation.set(0,Math.PI - cardRot,0)
+
+					if(cardRot > Math.PI / 2)
+					{
+						postcard.us.visible = false;
+					}
+					else
+					{
+						postcard.us.visible = true;
+					}
+				}
+			}
+
+			function draw() {
+				requestAnimationFrame( draw );
+				update();
+				renderer.render( scene, camera );
+			}
+
+			function run(event)
+			{
+				started = true;
+				let content = document.getElementById("content")
+				content.appendChild( renderer.domElement );
+				let startb = document.getElementById("start")
+				startb.parentNode.removeChild(startb)
+				player.start()
+				player.volume.value = -5
+				draw();
+				event.stopPropagation()
+				document.body.onclick = null
+				content.onclick = flip
+				let footer = document.getElementById("directions");
+  				footer.classList.remove("hidden");
+  				let mute = document.getElementById("mute");
+  				mute.classList.remove("hidden");
+			}
+
+			function mute()
+			{
+				if(player.volume.value > -100)
+				{
+					player.volume.value = -100;
+					let mute = document.getElementById("mute-text");
+  					mute.innerHTML = "play"
+				}
+				else
+				{
+					player.volume.value = -5;
+					let mute = document.getElementById("mute-text");
+  					mute.innerHTML = "mute"
+				}
+			}
+
+			function tap()
+			{
+				flip()
+			}
+
+			function flip()
+			{
+				if(!started) return;
+
+				mouseEnabled = !mouseEnabled;
+				if(!mouseEnabled)
+				{
+					console.log("flipping to back!")
+					camTarget.x = 0;
+					camTarget.y = 0;
+					rotTarget = Math.PI;
+				}else{
+					rotTarget = 0;
+				}
+			}
+
+			var maxDistance = { x: 8.5, y: 8.5};
+
+			function mouse(event) 
+			{
+
+				if(!started) return;
+				if(mouseEnabled)
+				{
+					let x = 0
+					let y = 0
+
+					if(event.touches)
+					{
+						x = (event.touches[0].clientX / document.documentElement.clientWidth) * 2.0 - 1.0
+						//y = (event.touches[0].clientY / document.documentElement.clientHeight) * 2.0 - 1.0	
+					}
+					else
+					{
+						x = (event.clientX / document.documentElement.clientWidth) * 2.0 - 1.0
+						y = (event.clientY / document.documentElement.clientHeight) * 2.0 - 1.0	
+					}
+					
+					camTarget.x = maxDistance.x * x
+					camTarget.y = maxDistance.y * y
+				}
+			}
+
+			function onWindowResize() {
+				camera.aspect = window.innerWidth / window.innerHeight;
+				camera.updateProjectionMatrix();
+				renderer.setSize( window.innerWidth, window.innerHeight );
+			}
+
+			window.addEventListener('resize', onWindowResize, false);
+
+		</script>
+
+
+
+	<div class="start-container" id="start">
+		<span class="start"> <h1>CLICK TO START</h1> There will be sound </span>
+	</div>
+
+	<div id="mute" class="mute hidden" >
+ 		<div id="mute-text" class="topright" onclick="mute()">mute</div>
+	</div>
+
+	<div id="content"></div>
+
+  	<footer id="directions" class="footer center-h hidden">click postcard to flip</footer>
+
+	</body>
+</html>

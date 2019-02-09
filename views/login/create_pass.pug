@@ -1,0 +1,21 @@
+div.subtitle
+    | Hello <strong>#{user.firstname}</strong>! please create a password.
+div.container(id="login-form")
+    form(method="POST" action="/login" )
+        div.field.is-horizontal
+            div.field-body.is-medium
+                div.field
+                    div.control.has-icons-left.is-expanded.is-fullwidth
+                        input(type="hidden" value=user.email name="email")
+                        input.input.is-medium(
+                        id="user-pass" 
+                        type="password"
+                        name="password")
+                        span.icon.is-small.is-left
+                            i.fas.fa-lock          
+                div.field.is-grouped
+                    p.control
+                        button.button.button.is-info.is-medium(
+                        type="submit"
+                        ) Create Password
+        p.help Use this password to log back in if you ever get logged out. 

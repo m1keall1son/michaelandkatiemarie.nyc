@@ -13,12 +13,16 @@
     "debug": "NODE_ENV=development node --inspect index.js",
     "win-test": "set NODE_ENV=test&& node index.js",
     "win-prod": "set NODE_ENV=production&& node index.js",
-    "win-dev": "set NODE_ENV=development&& node index.js"
+    "win-dev": "set NODE_ENV=development&& node index.js",
+    "build-css":"node-sass --omit-source-map-url sass/style.scss public/css/style.css",
+    "watch-css": "npm run build-css -- --watch"
   },
   "author": "michael allison",
   "license": "ISC",
   "dependencies": {
+    "bulma": "^0.7.4",
     "connect-session-sequelize": "^6.0.0",
+    "node-sass": "^4.11.0",
     "sequelize": "^4.42.0",
     "sequelize-cli": "^5.4.0",
     "utils": "file:./utils"

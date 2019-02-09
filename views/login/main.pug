@@ -1,0 +1,14 @@
+section.hero.is-medium.is-primary
+    div.hero-body
+        div.container
+            h1.title.is-1 Michael & KatieMarie
+            if user.state === "requestaccess"
+                include request_to_register.pug
+            else if user.state === "register"
+                include register.pug
+            else if user.state === "createpass"
+                include create_pass.pug
+            else
+                include login.pug
+    script
+        include control.js

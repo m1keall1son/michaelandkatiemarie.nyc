@@ -35,8 +35,8 @@ class WeddingApp extends UTILS.App {
 		this.db.sequelize.sync().then(()=>{
 			log.channel('WeddingApp').notice('Database connected!')
 			//then connect server
-			this._server.addApi(require('./frontend')())
 			this._server.addApi(require('./guest_api')())
+			this._server.addApi(require('./frontend')())
 			this._server.open(this.port)
 
 			return Promise.all([this.guestList(),this.userList()])

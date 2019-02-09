@@ -1,0 +1,19 @@
+doctype html
+html(lang="en")
+    head
+        meta(charset="utf-8")
+        meta(name="viewport" content="width=device-width, initial-scale=1")
+        title #{main.page}
+        link(rel="stylesheet" href="css/style.css")
+        script(defer src="https://use.fontawesome.com/releases/v5.3.1/js/all.js")
+    body
+        if main.state === "authenticated"
+            include content.pug
+        else if main.state === "login"
+            include login/main.pug
+        else
+            include error.pug
+
+
+
+

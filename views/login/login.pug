@@ -1,0 +1,37 @@
+div.container(id="login-form")
+    form(method="POST" action="/login")
+        div.field.is-horizontal
+            div.field-body.is-medium
+                div.field
+                    div.control.has-icons-left.is-expanded.is-fullwidth
+                        input.input.is-medium(
+                        id="user-email" 
+                        type="email"
+                        placeholder="your email"
+                        name="email")
+                        span.icon.is-small.is-left
+                            i.fas.fa-envelope
+
+                div.field
+                    div.control.has-icons-left.is-expanded.is-fullwidth
+                        input.input.is-medium(
+                        id="user-pass" 
+                        type="password"
+                        name="password")
+                        span.icon.is-small.is-left
+                            i.fas.fa-lock
+                  
+                div.field
+                    p.control
+                        button.button.button.is-info.is-medium(
+                        type="submit"
+                        ) Login
+
+div.container(id="button-register")
+    div.content
+        br
+        p.is-normal
+            | Don't have a login? 
+            a.button.is-text.is-small(
+            onclick="register_get(event)"
+            ) Register your email!

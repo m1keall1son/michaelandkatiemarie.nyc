@@ -18,6 +18,20 @@ var sessionCheckerMiddleware = (req, res, next) => {
 var session = require('express-session')
 var SequelizeStore = require('connect-session-sequelize')(session.Store);
 
+var State = {
+	LANDING:"landing",
+	ERROR:"error",
+	LOGIN:"login",
+	AUTHENTICATED:"authenticated"
+}
+
+var User = {
+	REQUEST_ACCESS:"requestaccess",
+	CREATE_PASS:"createpass",
+	LOGIN:"login",
+	AUTHENTICATED:"authenticated"
+}
+
 module.exports = () => {
 
 	let db_name = "";
@@ -61,6 +75,18 @@ module.exports = () => {
 		proxy: app.environment == UTILS.Environment.PRODUCTION
 	}))
 
+	//how to handle custom 404?
+	// // //set 404 last
+	// app.server().use(function (req, res, next) {
+	// 	let data = {
+	// 		main: { 
+	// 			page:"404", 
+	// 			state:State.ERROR
+	// 		}
+	// 	}
+	// 	res.status(404).render('main', data)
+	// });
+
 	sessionstore.sync()
 		
 	//check for half eaten cookies...
@@ -75,37 +101,52 @@ module.exports = () => {
 
 	api.router.route('/')
 		.get((req, res) => {
+			res.redirect('/savethedate');
+		})
+
+	api.router.route('/test')
+		.get((req, res) => {
+			res.render('test');
+		})
+
+	api.router.route('/savethedate')
+		.get((req, res) => {
 			res.sendFile(__dirname + '/public/savethedate.html');
-			//res.redirect('/')
+		})
+
+	api.router.route('/engagement')
+		.get((req, res) => {
+			res.sendFile(__dirname + '/public/engagement/engagement.html');
 		})
 
 	api.router.route('/register')
-		.get(sessionCheckerMiddleware, (req,res) => {
-			res.render('register');
-		})
-		.post((req,res) => {
-			app.database().guests.findOne({
-	            where: { email: req.body.email }
-	        })
-	        .then(guest => {
-	        	const query = querystring.stringify({
-			          "email": guest.email,
-			          "name": guest.firstname
-			      })
-	            res.redirect('/createpass?' + query);
-	        })
-	        .catch(error => {
-	        	log.channel("Frontend").error(error)
-	        	const query = querystring.stringify({
-			          "email": req.body.email,
-			      })
-	            res.redirect('/request?' + query);
-	        })
-		})
+	.get((req,res)=>{
+		log.verbose("in register")
+		res.render('login/register')
+	})
+	.post((req,res) => {
+		app.database().guests.findOne({
+            where: { email: req.body.email }
+        })
+        .then(guest => {
+        	const query = querystring.stringify({
+		          "email": guest.email,
+		          "name": guest.firstname
+		      })
+            res.redirect('/createpass?' + query);
+        })
+        .catch(error => {
+        	log.channel("Frontend").error(error)
+        	const query = querystring.stringify({
+		          "email": req.body.email,
+		      })
+            res.redirect('/request?' + query);
+        })
+	})
 
 	api.router.route('/createpass')
 		.get(sessionCheckerMiddleware, (req, res) => {
-			res.render('create_pass', {email: req.query.email, name: req.query.name})
+			res.render('login/create_pass', {user:{email: req.query.email, firstname: req.query.name}})
 		})
 		.post((req, res) => {
 			app.database().users.create({
@@ -117,17 +158,17 @@ module.exports = () => {
 	            return app.database().guests.update(
 	            	{ user_id: user.id },
 	            	{ where: { email: req.body.email }})
-	            .then(()=>{
-	            	res.redirect('/login');
-	            })
 	        })
+	        .then(()=>{
+            	res.redirect('/login');
+            })
 	        .catch(error => {
 	            res.redirect('/register');
 	        });
 		})
 
 	api.router.route('/request')
-		.get((req, res)=>{
+		.get(sessionCheckerMiddleware, (req, res)=>{
 			log.channel("frontend").verbose("user doesn't exist for: ", req.query.email, " sending to request...")
 			res.render('request_to_register', {email: req.query.email})
 		})
@@ -139,31 +180,83 @@ module.exports = () => {
 
 	api.router.route('/login')
 		.get(sessionCheckerMiddleware, (req, res) => {
-			res.sendFile(__dirname + '/public/login.html');
+			let data = {
+				main: { 
+					page: "Login", 
+					state: State.LOGIN
+				},
+				user: {
+					state: User.LOGIN
+				}
+			}
+			res.render('main', data);
 		})
 		.post((req, res) => {
 			let email = req.body.email
 			let password = req.body.password
-			app.database().users.findOne({where:{ email: email }}).then(user => {
-				if (!user) {
-					log.channel("frontend").verbose("user doesn't exist")
-                	res.redirect('/login');
-	            } else if (!user.validPassword(password)) {
-	            	log.channel("frontend").verbose("invalid password")
-	                res.redirect('/login');
-	            } else {
-	                req.session.user = user.dataValues;
-	                res.redirect('/dashboard');
-	            }
+			log.channel("frontend").verbose("logging in email: ",email," ...");
+			app.database().users.findOne({
+				where:{ email: email }
 			})
+			.then(user=>{ 
+				if(!user)
+				{
+					throw "user doesn't exist"
+				}
+				else if(!user.validPassword(password))
+				{
+					throw "invalid password"
+				}
+				else
+				{
+					req.session.user = user.dataValues;
+					log.channel("Frontend").verbose("login success!");
+	            	return res.redirect('/dashboard')
+				}
+			})
+            .catch(error=>{
+            	log.channel("frontend").warning("login fail: ", error)
+            	res.redirect('/login')
+            })
 		})
 	    
 	api.router.route('/dashboard')
 		.get((req, res) => {
+			log.warning("HERE")
 		    if (req.session.user && req.cookies.user_sid) {
-		        res.sendFile(__dirname + '/public/dashboard.html');
+		    	//authenticated, get their info
+		    	return app.database().guests.findOne({
+		            where: { user_id: req.session.user.id }
+		        })
+		        .then(guest => {
+		        	log.channel("Frontend").verbose("found the right guest info");
+		        	let data = {
+						main: { 
+							page: "Login", 
+							state: State.AUTHENTICATED
+						},
+						user: {
+							state: User.AUTHENTICATED,
+							firstname: guest.firstname,
+							lastname: guest.lastname,
+							email: guest.email
+						}
+					}
+					res.render('main', data)
+		        })
+		        .catch(error => {
+		        	log.channel("Frontend").error("couldn't find the right guest info: ", error);
+		        	let data = {
+						main: { 
+							page: "Error", 
+							state: State.ERROR
+						}
+					}
+					res.render('main', data)
+		        })
 		    } else {
-		        res.redirect('/login');
+		    	//not authenticated, redirect
+		        res.redirect('/login')
 		    }
 		});
 

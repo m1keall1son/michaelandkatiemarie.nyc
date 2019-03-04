@@ -180,7 +180,7 @@ module.exports = () => {
 	})
 	.post((req,res) => {
 		app.database().guests.findOne({
-            where: { email: req.body.email }
+            where: { email: req.body.email.toLowerCase() }
         })
         .then(guest => {
         	const query = querystring.stringify({
@@ -204,8 +204,8 @@ module.exports = () => {
 		})
 		.post((req, res) => {
 			let password = req.body.password
-			let email = req.body.email
-			log.verbose("creating pass for: ", req.body.email, "...");
+			let email = req.body.email.toLowerCase()
+			log.verbose("creating pass for: ", email, "...");
 			app.database().users.create({
 	            email: email,
 	            password: password
@@ -306,7 +306,7 @@ module.exports = () => {
 			res.render('main', data);
 		})
 		.post((req, res) => {
-			let email = req.body.email
+			let email = req.body.email.toLowerCase()
 			let password = req.body.password
 			log.channel("frontend").verbose("logging in email: ", email, " ...");
 			app.database().users.findOne({

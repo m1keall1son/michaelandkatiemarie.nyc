@@ -16,7 +16,7 @@ class Database {
 	connect() { 
 		return new Promise((resolve,reject)=>{
 			if(!this.sqlite){
-				this.sqlite = new Sequelize('sqlite:'+this.databaseName, { logging: log.channel("Sequelize").verbose })
+				this.sqlite = new Sequelize('sqlite:'+this.databaseName, { logging: false })
 				this.sqlite.authenticate()
 					.then(() => {
 				    	log.channel('Database').reallyVerbose("loaded database: " + this.databaseName)

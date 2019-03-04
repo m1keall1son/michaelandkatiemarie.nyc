@@ -64,7 +64,8 @@ module.exports = () => {
 
 	var sequelize = new Sequelize({
 		    "dialect": "sqlite",
-		    "storage": db_name
+		    "storage": db_name,
+		    "logging": false
 		})
 
 	let expiration = 365 * 24 * 60 * 60 * 1000

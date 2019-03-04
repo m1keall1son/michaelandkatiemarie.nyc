@@ -5,11 +5,28 @@ const get_app = require('./wedding_app')
 const querystring = require('querystring')
 const Sequelize = require('sequelize');
 const app = get_app()
+const mailer = require('nodemailer')
+
+
+function loginexc(message, invalidUser, invalidPass){
+	this.invalidUser = invalidUser
+	this.invalidPass = invalidPass
+	this.message = message
+}
+
+//mail to me
+let transporter = mailer.createTransport({
+    service:"gmail",
+    auth: {
+        user: 'michaelandkatiemarie@gmail.com',
+        pass: process.env.EMAIL_PASS
+    }
+});
 
 //fast track logged in users
 var sessionCheckerMiddleware = (req, res, next) => {
     if (req.session.user && req.cookies.user_sid) {
-        res.redirect('/dashboard');
+        res.redirect('/wedding');
     } else {
         next();
     }    
@@ -18,11 +35,11 @@ var sessionCheckerMiddleware = (req, res, next) => {
 var session = require('express-session')
 var SequelizeStore = require('connect-session-sequelize')(session.Store);
 
-var State = {
-	LANDING:"landing",
-	ERROR:"error",
-	LOGIN:"login",
-	AUTHENTICATED:"authenticated"
+var Page = {
+	HOME:"Michael & KatieMarie",
+	IDOCREW:"Meet the I-Do-Crew",
+	LOGIN:"Login",
+	ERROR:"Error"
 }
 
 var User = {
@@ -106,12 +123,13 @@ module.exports = () => {
 
 	api.router.route('/test')
 		.get((req, res) => {
-			res.render('test');
+			res.sendFile(__dirname + '/public/header.html');
 		})
 
 	api.router.route('/savethedate')
 		.get((req, res) => {
-			res.sendFile(__dirname + '/public/savethedate.html');
+			//res.sendFile(__dirname + '/public/savethedate.html');
+			res.render('savethedate/main')
 		})
 
 	api.router.route('/engagement')
@@ -119,9 +137,51 @@ module.exports = () => {
 			res.sendFile(__dirname + '/public/engagement/engagement.html');
 		})
 
+	api.router.route('/idocrew')
+		.get((req, res) => {
+			if (req.session.user && req.cookies.user_sid) {
+		    	//authenticated, get their info
+		    	return app.database().guests.findOne({
+		            where: { user_id: req.session.user.id }
+		        })
+		        .then(guest => {
+		        	let data = {
+		        		constants: {
+							Page: Page,
+		        			User: User
+	            		},
+						main: { 
+							page: Page.IDOCREW
+						},
+						user: {
+							state: User.AUTHENTICATED,
+							firstname: guest.firstname,
+							lastname: guest.lastname,
+							email: guest.email,
+							invited: false,
+							rehearsal: false,
+							idocrew: false
+						}
+					}
+					res.render('main', data)
+		        })
+		        .catch(error => {
+		        	log.channel("Frontend").error("couldn't find the right guest info: ", error);
+		        	let data = {
+						main: { 
+							page: Page.ERROR
+						}
+					}
+					res.render('main', data)
+		        })
+		    } else {
+		    	//not authenticated, redirect
+		        res.redirect('/login')
+		    }
+		})
+
 	api.router.route('/register')
-	.get((req,res)=>{
-		log.verbose("in register")
+	.get(sessionCheckerMiddleware, (req,res)=>{
 		res.render('login/register')
 	})
 	.post((req,res) => {
@@ -149,20 +209,63 @@ module.exports = () => {
 			res.render('login/create_pass', {user:{email: req.query.email, firstname: req.query.name}})
 		})
 		.post((req, res) => {
+			let password = req.body.password
+			let email = req.body.email
+			log.verbose("creating pass for: ", req.body.email, "...");
 			app.database().users.create({
-	            email: req.body.email,
-	            password: req.body.password
+	            email: email,
+	            password: password
 	        })
 	        .then(user => {
+	        	log.verbose("user created successfully: ", JSON.stringify(user));
 	            req.session.user = user.dataValues;
 	            return app.database().guests.update(
 	            	{ user_id: user.id },
 	            	{ where: { email: req.body.email }})
 	        })
 	        .then(()=>{
-            	res.redirect('/login');
+	        	log.verbose("user associated to guest successfully, logging in.");
+	        	app.database().users.findOne({
+					where:{ email: email }
+				})
+				.then(user=>{ 
+					if(!user)
+					{
+						throw new loginexc("user does not exist", true, true)
+					}
+					else if(!user.validPassword(password))
+					{
+						throw new loginexc("invlid password", false, true)
+					}
+					else
+					{
+						req.session.user = user.dataValues;
+						log.channel("Frontend").verbose("login success!");
+		            	return res.redirect('/wedding')
+					}
+				})
+	            .catch(error=>{
+	            	log.channel("frontend").warning("login fail: ", error.message)
+	            	let data = {
+	            		constants: {
+							Page: Page,
+		        			User: User
+	            		},
+						main: { 
+							page: Page.LOGIN
+						},
+						user: {
+							state: User.LOGIN,
+							email: email,
+							error: error
+						}
+					}
+					res.render('main', data);
+	            })
+
             })
 	        .catch(error => {
+	        	log.channel("Frontend").error("in create pass: ", error)
 	            res.redirect('/register');
 	        });
 		})
@@ -170,20 +273,36 @@ module.exports = () => {
 	api.router.route('/request')
 		.get(sessionCheckerMiddleware, (req, res)=>{
 			log.channel("frontend").verbose("user doesn't exist for: ", req.query.email, " sending to request...")
-			res.render('request_to_register', {email: req.query.email})
+			res.render('login/request_to_register', {page:{sent:false},user:{email: req.query.email}})
 		})
 		.post((req, res)=>{
 			//send email to me
-			log.channel("frontend").verbose("would send email to register this email: " + req.body.email + ", for " + req.body.name)
-			res.render('request_to_register', {sent: true})
+			var mailOptions = {
+				from: 'michaelandkatiemarie@gmail.com',
+				to: 'philosopher.osopher@gmail.com',
+				subject: '[WEDDING SITE] Request for access',
+				text: "register this email: " + req.body.email + ", for " + req.body.name
+			};
+			transporter.sendMail(mailOptions, function(error, info){
+				if (error) {
+				    log.channel("Frontend").errorTrace("sending mail error: ", error);
+					res.render('login/request_to_register', {page:{sent:false},user:{email: req.body.email}})
+				} else {
+				    log.channel("Frontend").verbose('Email sent: ' + info.response);
+				    res.render('login/request_to_register', {page:{sent: true}})
+				}
+			});
 		})
 
 	api.router.route('/login')
 		.get(sessionCheckerMiddleware, (req, res) => {
 			let data = {
+				constants: {
+					Page: Page,
+        			User: User
+        		},
 				main: { 
-					page: "Login", 
-					state: State.LOGIN
+					page: Page.LOGIN
 				},
 				user: {
 					state: User.LOGIN
@@ -194,62 +313,86 @@ module.exports = () => {
 		.post((req, res) => {
 			let email = req.body.email
 			let password = req.body.password
-			log.channel("frontend").verbose("logging in email: ",email," ...");
+			log.channel("frontend").verbose("logging in email: ", email, " ...");
 			app.database().users.findOne({
 				where:{ email: email }
 			})
 			.then(user=>{ 
 				if(!user)
 				{
-					throw "user doesn't exist"
+					throw new loginexc("user does not exist", true, true)
 				}
 				else if(!user.validPassword(password))
 				{
-					throw "invalid password"
+					throw new loginexc("invlid password", false, true)
 				}
 				else
 				{
 					req.session.user = user.dataValues;
 					log.channel("Frontend").verbose("login success!");
-	            	return res.redirect('/dashboard')
+	            	return res.redirect('/wedding')
 				}
 			})
             .catch(error=>{
-            	log.channel("frontend").warning("login fail: ", error)
-            	res.redirect('/login')
+            	log.channel("frontend").warning("login fail: ", error.message)
+            	let data = {
+            		constants: {
+						Page: Page,
+	        			User: User
+            		},
+					main: { 
+						page: Page.LOGIN
+					},
+					user: {
+						state: User.LOGIN,
+						email: email,
+						error: error
+					}
+				}
+				res.render('main', data);
             })
 		})
 	    
-	api.router.route('/dashboard')
+	api.router.route('/wedding')
 		.get((req, res) => {
-			log.warning("HERE")
 		    if (req.session.user && req.cookies.user_sid) {
 		    	//authenticated, get their info
+		    	log.channel("Frontend").verbose("finding user_id: ",req.session.user.id, " ...");
 		    	return app.database().guests.findOne({
 		            where: { user_id: req.session.user.id }
 		        })
 		        .then(guest => {
-		        	log.channel("Frontend").verbose("found the right guest info");
 		        	let data = {
+		        		constants: {
+							Page: Page,
+		        			User: User
+	            		},
 						main: { 
-							page: "Login", 
-							state: State.AUTHENTICATED
+							page: Page.HOME
 						},
 						user: {
 							state: User.AUTHENTICATED,
 							firstname: guest.firstname,
 							lastname: guest.lastname,
-							email: guest.email
+							email: guest.email,
+							invited: false,
+							rehearsal: false,
+							idocrew: false
 						}
 					}
 					res.render('main', data)
 		        })
 		        .catch(error => {
 		        	log.channel("Frontend").error("couldn't find the right guest info: ", error);
+		        	res.clearCookie('user_sid');
+		        	req.session.destroy()
 		        	let data = {
+		        		constants: {
+							Page: Page,
+		        			User: User
+	            		},
 						main: { 
-							page: "Error", 
-							state: State.ERROR
+							page: Page.ERROR
 						}
 					}
 					res.render('main', data)

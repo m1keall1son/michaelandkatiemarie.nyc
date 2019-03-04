@@ -61,7 +61,7 @@ LoggerChannel.prototype.warning = function() {
 	}
 };
 
-LoggerChannel.prototype.error = function() {
+LoggerChannel.prototype.errorTrace = function() {
 	if(arguments.length > 0 && this.logLevel >= LogLevel.ERROR){
 		let style = "\x1b[31m\x1b[40m%s\x1b[0m%s";
 		let header = "[ERROR]" + (this.channelName ? `[${this.channelName}]` : "");
@@ -70,6 +70,18 @@ LoggerChannel.prototype.error = function() {
 			message += String(arguments[i]);
 		}
 		console.trace(style, header, message);
+	}
+};
+
+LoggerChannel.prototype.error = function() {
+	if(arguments.length > 0 && this.logLevel >= LogLevel.ERROR){
+		let style = "\x1b[31m\x1b[40m%s\x1b[0m%s";
+		let header = "[ERROR]" + (this.channelName ? `[${this.channelName}]` : "");
+		let message = ' ';
+		for(let i = 0; i < arguments.length; i++) {
+			message += String(arguments[i]);
+		}
+		console.log(style, header, message);
 	}
 };
 

@@ -1,7 +1,7 @@
-div.subtitle
-    | Hello <strong>#{user.firstname}</strong>! please create a password.
+div.subtitle.has-text-primary
+    | Hello <strong class="has-text-primary">#{user.firstname}</strong>! please create a password.
 div.container(id="login-form")
-    form(method="POST" action="/login" )
+    form(method="POST" action="/createpass" )
         div.field.is-horizontal
             div.field-body.is-medium
                 div.field
@@ -16,6 +16,7 @@ div.container(id="login-form")
                 div.field.is-grouped
                     p.control
                         button.button.button.is-info.is-medium(
+                        id="pass_button"
                         type="submit"
                         ) Create Password
         p.help Use this password to log back in if you ever get logged out. 

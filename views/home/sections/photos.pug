@@ -1,0 +1,94 @@
+div.columns.is-mobile.is-gapless.is-multiline(id="photos")
+    - var i = 0;
+    - var possible = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30];
+    - function shuffle(a) { for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; }
+    - shuffle(possible);
+    
+    div.column.is-one-quarter-mobile.is-2-tablet.is-2-desktop
+        figure.image.is-square
+            img(src="images/squares/sq" + possible[0] + ".JPG")
+
+    div.column.is-one-quarter-mobile.is-2-tablet.is-2-desktop
+        figure.image.is-square
+            img(src="images/squares/sq" + possible[1] + ".JPG")
+
+    div.column.is-one-quarter-mobile.is-2-tablet.is-2-desktop
+        figure.image.is-square
+            img(src="images/squares/sq" + possible[2] + ".JPG")
+
+    div.column.is-one-quarter-mobile.is-2-tablet.is-2-desktop
+        figure.image.is-square
+            img(src="images/squares/sq" + possible[3] + ".JPG")
+
+    div.column.is-one-quarter-mobile.is-2-tablet.is-2-desktop
+        figure.image.is-square
+            img(src="images/squares/sq" + possible[4] + ".JPG")
+
+    div.column.is-one-quarter-mobile.is-2-tablet.is-2-desktop
+        figure.image.is-square
+            img(src="images/squares/sq" + possible[5] + ".JPG")
+
+    div.column.is-one-quarter-mobile.is-2-tablet.is-2-desktop
+        figure.image.is-square
+            img(src="images/squares/sq" + possible[6] + ".JPG")
+
+    div.column.is-one-quarter-mobile.is-2-tablet.is-2-desktop
+        figure.image.is-square
+            img(src="images/squares/sq" + possible[7] + ".JPG")
+
+    div.column.is-one-quarter-mobile.is-2-tablet.is-2-desktop
+        figure.image.is-square
+            img(src="images/squares/sq" + possible[8] + ".JPG")
+
+    div.column.is-one-quarter-mobile.is-2-tablet.is-2-desktop
+        figure.image.is-square
+            img(src="images/squares/sq" + possible[9] + ".JPG")
+
+    div.column.is-one-quarter-mobile.is-2-tablet.is-2-desktop
+        figure.image.is-square
+            img(src="images/squares/sq" + possible[10] + ".JPG")
+
+    div.column.is-one-quarter-mobile.is-2-tablet.is-2-desktop
+        figure.image.is-square
+            img(src="images/squares/sq" + possible[11] + ".JPG")
+
+    div.column.is-one-quarter-mobile.is-2-tablet.is-2-desktop
+        figure.image.is-square
+            img(src="images/squares/sq" + possible[12] + ".JPG")
+
+    div.column.is-one-quarter-mobile.is-2-tablet.is-2-desktop
+        figure.image.is-square
+            img(src="images/squares/sq" + possible[13] + ".JPG")
+
+    div.column.is-one-quarter-mobile.is-2-tablet.is-2-desktop
+        figure.image.is-square
+            img(src="images/squares/sq" + possible[14] + ".JPG")
+
+    div.column.is-one-quarter-mobile.is-2-tablet.is-2-desktop
+        figure.image.is-square
+            img(src="images/squares/sq" + possible[15] + ".JPG")
+
+    div.column.is-one-quarter-mobile.is-2-tablet.is-2-desktop.is-hidden-mobile
+        figure.image.is-square
+            img(src="images/squares/sq" + possible[16] + ".JPG")
+
+    div.column.is-one-quarter-mobile.is-2-tablet.is-2-desktop.is-hidden-mobile
+        figure.image.is-square
+            img(src="images/squares/sq" + possible[17] + ".JPG")
+
+section.hero.is-light(id="photo-album")
+    div.hero-body
+        div.container.has-text-centered
+            div.content
+                a.button.is-large.is-danger(
+                target="_blank"
+                href="https://photos.app.goo.gl/dbLb6ACUTymHpe8D7"
+                ) 
+                    span.image.is-48x48
+                        img(width="128" src="images/google.png")
+                    span Photo Album
+                br
+                br
+                p.subtitle.is-5
+                    p We encourage you to take picutures at our wedding related events and upload them here to share with everyone.  
+                    p Feel free to share any of your favorite photos of us as well. We want 'em all!

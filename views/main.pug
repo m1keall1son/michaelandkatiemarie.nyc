@@ -4,15 +4,24 @@ html(lang="en")
         meta(charset="utf-8")
         meta(name="viewport" content="width=device-width, initial-scale=1")
         title #{main.page}
+        include favicon.pug
         link(rel="stylesheet" href="css/style.css")
         script(defer src="https://use.fontawesome.com/releases/v5.3.1/js/all.js")
+        script(src="js/jquery.js" type="text/javascript")
     body
-        if main.state === "authenticated"
-            include content.pug
-        else if main.state === "login"
+        if main.page == constants.Page.HOME
+            include home/content.pug
+        else if main.page == constants.Page.IDOCREW
+            include idocrew/content.pug
+        else if main.page == constants.Page.LOGIN
             include login/main.pug
         else
             include error.pug
+
+        footer.footer
+            div.container.has-text-centered
+                p Have any questions or concerns?  Feel free to reach out! 
+                a.link.has-text-danger(href="mailto:hello@michaelandkatiemarie.nyc") hello@michaelandkatiemarie.nyc
 
 
 

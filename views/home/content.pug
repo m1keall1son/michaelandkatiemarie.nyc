@@ -1,0 +1,12 @@
+script
+	include control.js
+include nav.pug
+
+include sections/top.pug
+include sections/photos.pug
+include sections/accomodations.pug
+include sections/travel.pug
+include sections/registry.pug
+
+if user.invited
+	include sections/invitation.pug

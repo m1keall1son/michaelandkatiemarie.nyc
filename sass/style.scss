@@ -1,37 +1,58 @@
 @charset "utf-8";
+@import url('https://fonts.googleapis.com/css?family=Berkshire+Swash|Quattrocento+Sans');
+
+$deep-blue: hsla(234%, 57%, 10%, 1);
+$off-white: #FCF8F2;//hsla(37%, 68%, 96%, 1);
+$dusty-salmon: hsla(3%, 33%, 52%, 1);
+$goldenrod: hsla(39%, 52%, 56%, 1);
+$brown: hsla(34%, 16%, 42%, 1);
+
+$black: $deep-blue;
+$red: $dusty-salmon;
+$blue: $deep-blue;
+
+$light: $off-white;
+$dark: $deep-blue;
+$primary: $goldenrod;
+$warning: $goldenrod;
+$link: $dusty-salmon;
+$info: $brown;
+$success: $goldenrod;
+$danger: $dusty-salmon; 
+
+$family-sans-serif: 'Quattrocento Sans', sans-serif;
+$family-secondary: 'Berkshire Swash', cursive;
+$text: $black;
+$text-strong: $black;
+$text-light: $black;
+
+//phone
+$size-1: 5rem;
+$size-2: 3rem;
+
+$widescreen-enabled: false;
+$fullhd-enabled: false;
+
+$tablet: 769px;
+$navbar-breakpoint: $tablet;
+
+$title-color: $black;
+$subtitle-color: $black;
+$navbar-item-color: $black;
+
+$body-background-color: $off-white;
+$background: $off-white;
+
 @import "../node_modules/bulma/bulma.sass"
-// Import a Google Font
-// @import url('https://fonts.googleapis.com/css?family=Nunito:400,700');
 
-// // Set your brand colors
-// $purple: #8A4D76;
-// $pink: #FA7C91;
-// $brown: #757763;
-// $beige-light: #D0D1CD;
-// $beige-lighter: #EFF0EB;
-
-// // Update Bulma's global variables
-// $family-sans-serif: "Nunito", sans-serif;
-// $grey-dark: $brown;
-// $grey-light: $beige-light;
-// $primary: $purple;
-// $link: $pink;
-// $widescreen-enabled: false;
-// $fullhd-enabled: false;
-
-// // Update some of Bulma's component variables
-// $body-background-color: $beige-lighter;
-// $control-border-width: 2px;
-// $input-border-color: transparent;
-// $input-shadow: none;
-
-// // Import only what you need from Bulma
 // @import "../node_modules/bulma/sass/utilities/_all.sass";
 // @import "../node_modules/bulma/sass/base/_all.sass";
 // @import "../node_modules/bulma/sass/elements/button.sass";
 // @import "../node_modules/bulma/sass/elements/container.sass";
 // @import "../node_modules/bulma/sass/elements/form.sass";
 // @import "../node_modules/bulma/sass/elements/title.sass";
+// @import "../node_modules/bulma/sass/elements/box.sass";
 // @import "../node_modules/bulma/sass/components/navbar.sass";
 // @import "../node_modules/bulma/sass/layout/hero.sass";
 // @import "../node_modules/bulma/sass/layout/section.sass";
+// @import "../node_modules/bulma/sass/grid/columns.sass";

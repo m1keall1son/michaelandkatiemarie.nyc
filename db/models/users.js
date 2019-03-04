@@ -15,12 +15,13 @@ module.exports = (sequelize, DataTypes) => {
     }  
 });
 
-users.prototype.validPassword = function(password) {
-    return bcrypt.compareSync(password, this.password)
-}
+  users.prototype.validPassword = function(password) {
+      return bcrypt.compareSync(password, this.password)
+  }
 
   users.associate = function(models) {
     // associations can be defined here
   };
+  
   return users;
 };

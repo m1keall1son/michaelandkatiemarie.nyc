@@ -1,0 +1,41 @@
+nav.navbar.is-fixed-top(
+role="navigation" 
+aria-label="main navigation")
+    div.navbar-brand
+        a.navbar-item.is-3(id="home" data-id="#top")
+            | M & KM
+        div.navbar-item
+            | Welcome #{user.firstname}!
+        a.navbar-burger(
+         role="button" 
+         aria-label="menu" 
+         aria-expanded="false")
+            span(aria-hidden="true")
+            span(aria-hidden="true")
+            span(aria-hidden="true")
+    div.navbar-menu
+        div.navbar-start
+            //a.navbar-item(data-id="#about") Our Story
+            a.navbar-item(href="/savethedate") Save The Date
+            div.navbar-item.has-dropdown.is-hoverable
+                a.navbar-link.is-arrowless The Wedding
+                div.navbar-dropdown
+                    //a.navbar-item(href="/idocrew") Meet the I-Do-Crew
+                    a.navbar-item(data-id="#registry") Registry
+                    a.navbar-item(data-id="#photo-album") Photo Album
+            div.navbar-item.has-dropdown.is-hoverable
+                a.navbar-link.is-arrowless Travel
+                div.navbar-dropdown
+                    a.navbar-item(data-id="#accomodations") Accomodations
+                    a.navbar-item(data-id="#air-travel") Air Travel
+                    a.navbar-item(data-id="#transpo") Getting Around NYC
+                    //a.navbar-item(data-id="#city") The City
+            if user.invited
+                div.navbar-item
+                    div.button.is-dark(id="invite-button" data-id="#invite") Your Invitation!
+        div.navbar-end
+            div.navbar-item
+                a.button.is-danger.is-inverted(href="/logout") Logout
+
+script 
+    include menu.js

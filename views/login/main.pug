@@ -1,7 +1,7 @@
-section.hero.is-medium.is-primary
+section.hero.is-fullheight.is-primary(id="hero-body")
     div.hero-body
-        div.container
-            h1.title.is-1 Michael & KatieMarie
+        div.container.box.has-text-dark(id="login-container")
+            h1.title.is-family-secondary.is-1.is-size-2-mobile.has-text-dark Michael & KatieMarie
             if user.state === "requestaccess"
                 include request_to_register.pug
             else if user.state === "register"

@@ -1,3 +1,6 @@
+const dotenv = require('dotenv')
+dotenv.config()
+
 const UTILS = require('utils')
 const log = UTILS.logger()
 

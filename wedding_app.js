@@ -43,7 +43,7 @@ class WeddingApp extends UTILS.App {
 		}).then((results)=>{
 			log.verbose(JSON.stringify(results))		
 		}).catch( err =>{
-			log.channel('WeddingApp').error('Database sync error: ',err)
+			log.channel('WeddingApp').errorTrace('Database sync error: ',err)
 		})
 	}
 

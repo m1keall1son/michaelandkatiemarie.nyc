@@ -4,34 +4,66 @@ div.container(id="login-form")
             div.field-body.is-medium
                 div.field
                     div.control.has-icons-left.is-expanded.is-fullwidth
-                        input.input.is-medium(
-                        id="user-email" 
-                        type="email"
-                        placeholder="your email"
-                        name="email")
-                        span.icon.is-small.is-left
-                            i.fas.fa-envelope
+                        if user.error && user.error.invalidUser
+                            input.input.is-medium.is-danger(
+                            id="user-email" 
+                            type="email"
+                            placeholder="your email"
+                            name="email")
+                            span.icon.is-small.is-left
+                                i.fas.fa-envelope
+                        else if user.error && !user.error.invalidUser
+                            input.input.is-medium(
+                            id="user-email" 
+                            type="email"
+                            value=user.email
+                            name="email")
+                            span.icon.is-small.is-left
+                                i.fas.fa-envelope
+                        else
+                            input.input.is-medium(
+                            id="user-email" 
+                            type="email"
+                            placeholder="your email"
+                            name="email")
+                            span.icon.is-small.is-left
+                                i.fas.fa-envelope
 
                 div.field
                     div.control.has-icons-left.is-expanded.is-fullwidth
-                        input.input.is-medium(
-                        id="user-pass" 
-                        type="password"
-                        name="password")
-                        span.icon.is-small.is-left
-                            i.fas.fa-lock
+                        if user.error && user.error.invalidPass
+                            input.input.is-medium.is-danger(
+                            id="user-pass" 
+                            type="password"
+                            name="password")
+                            span.icon.is-small.is-left
+                                i.fas.fa-lock
+                        else
+                            input.input.is-medium(
+                            id="user-pass" 
+                            type="password"
+                            name="password")
+                            span.icon.is-small.is-left
+                                i.fas.fa-lock
                   
                 div.field
                     p.control
-                        button.button.button.is-info.is-medium(
+                        button.button.button.is-dark.is-medium(
+                        id="login-button"
+                        onclick="login(event)"
                         type="submit"
                         ) Login
+    if user.error && user.error.invalidUser 
+        p.help.is-danger This login does not exist
+    else if user.error && user.error.invalidPass
+        p.help.is-danger Incorrect password
 
 div.container(id="button-register")
     div.content
         br
         p.is-normal
             | Don't have a login? 
-            a.button.is-text.is-small(
+            a.button.is-danger.is-small(
+            id="reg-button"
             onclick="register_get(event)"
             ) Register your email!

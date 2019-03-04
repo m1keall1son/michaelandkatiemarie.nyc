@@ -1,36 +1,33 @@
-html
-    head
-        title Request to register
-        link(rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous")
-
-    body.container
-        div.page-header
-            h1 Hmm we don't seem to have you on our list
-
-        nav.navbar.navbar-default
-            nav.container-fluid
-                nav#bs-example-navbar-collapse-1.collapse.navbar-collapse
-                    ul.nav.navbar-nav
-                        li
-                            a(href="/") Home
-                    ul.nav.navbar-nav.navbar-right
-                        li
-                            a(href="/login") Log In 
-                        li
-                            a(href="/logout") Log Out
-
-        div.container.row
-            div.jumbotron.col-sm-4.pull-center
-                if sent
-                    p Thank you! We will get back to you shortly.
-                else
-                    p Something went wrong and we don't have #{email} registered. Please send this request to get this email added to your guest registration. 
-                    form(action="/request" method="post")
-                        div
-                            label #{email}
-                            input(type="hidden" name="email" value=email)
-                        div
-                            label Your Name:
-                            input(type="text" name="name")
-                        div
-                            input.btn.btn-primary(type="submit" value="Send")
+if !page.sent
+    div.container(id="request-form")
+        div.subtitle.has-text-primary 
+            | Hmm, we dont recognize <strong class="has-text-primary">#{user.email}</strong>.  
+        div.container(id="login-form")          
+            div.field.is-horizontal
+                div.field-body.is-medium
+                    div.field
+                        div.control.has-icons-left.is-expanded.is-fullwidth
+                            input(
+                            type="hidden"
+                            id="user-email" 
+                            readonly
+                            value=user.email)
+                            input.input.is-medium(
+                            id="user-name" 
+                            type="text"
+                            placeholder="your full name")
+                            span.icon.is-small.is-left
+                                i.fas.fa-lock          
+                    div.field.is-grouped
+                        p.control
+                            button.button.button.is-info.is-medium(
+                            type="submit"
+                            id="req-button"
+                            onclick="request()"
+                            ) Send
+            p.help.is-primary Please send us your name and well we will get back to you shortly
+else
+    div.container
+        h1.title.has-text-dark Thank you!
+        p.subtitle.has-text-dark We will get back to you shortly.
+        a.button.is-link(href="/") Return

@@ -24,6 +24,7 @@
     "connect-session-sequelize": "^6.0.0",
     "dotenv": "^6.2.0",
     "node-sass": "^4.11.0",
+    "node-ses": "^2.2.0",
     "nodemailer": "^5.1.1",
     "sequelize": "^4.42.0",
     "sequelize-cli": "^5.4.0",

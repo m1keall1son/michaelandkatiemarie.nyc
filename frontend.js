@@ -5,8 +5,11 @@ const get_app = require('./wedding_app')
 const querystring = require('querystring')
 const Sequelize = require('sequelize');
 const app = get_app()
-const mailer = require('nodemailer')
+//const mailer = require('nodemailer')
 
+const amazon = require('node-ses')
+
+const emailClient = amazon.createClient({ key: process.env.EMAIL_KEY, secret: process.env.EMAIL_SECRET });
 
 function loginexc(message, invalidUser, invalidPass){
 	this.invalidUser = invalidUser
@@ -14,16 +17,6 @@ function loginexc(message, invalidUser, invalidPass){
 	this.message = message
 }
 
-//mail to me
-let transporter = mailer.createTransport({
-    service:"gmail",
-    auth: {
-        user: 'michaelandkatiemarie@gmail.com',
-        pass: process.env.EMAIL_PASS
-    }
-});
-
-//fast track logged in users
 var sessionCheckerMiddleware = (req, res, next) => {
     if (req.session.user && req.cookies.user_sid) {
         res.redirect('/wedding');
@@ -277,21 +270,22 @@ module.exports = () => {
 			res.render('login/request_to_register', {page:{sent:false},user:{email: req.query.email}})
 		})
 		.post((req, res)=>{
-			//send email to me
-			var mailOptions = {
-				from: 'michaelandkatiemarie@gmail.com',
-				to: 'philosopher.osopher@gmail.com',
-				subject: '[WEDDING SITE] Request for access',
-				text: "register this email: " + req.body.email + ", for " + req.body.name
-			};
-			transporter.sendMail(mailOptions, function(error, info){
-				if (error) {
-				    log.channel("Frontend").errorTrace("sending mail error: ", error);
+			emailClient.sendEmail({
+			   to: 'philosopher.osopher@gmail.com',
+			   from: 'hello@michaelandkatiemarie.nyc',
+			   subject: '[WEDDING SITE] Request for access',
+			   message: "register this email: " + req.body.email + ", for " + req.body.name,
+			   altText: 'plain text'
+			}, (err, data, result) => {
+			 
+				if (err) {
+				    log.channel("Frontend").errorTrace("sending mail error: ", JSON.stringify(err));
 					res.render('login/request_to_register', {page:{sent:false},user:{email: req.body.email}})
 				} else {
-				    log.channel("Frontend").verbose('Email sent: ' + info.response);
+				    log.channel("Frontend").verbose('Email sent: ' + JSON.stringify(result));
 				    res.render('login/request_to_register', {page:{sent: true}})
 				}
+
 			});
 		})
 

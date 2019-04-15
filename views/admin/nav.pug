@@ -19,7 +19,7 @@ aria-label="main navigation")
             div.navbar-item.has-dropdown.is-hoverable
                 a.navbar-link.is-arrowless The Wedding
                 div.navbar-dropdown
-                    a.navbar-item.is-active Meet the I Do Crew
+                    a.navbar-item(href="/idocrew") I Do Crew
                     a.navbar-item(href="/wedding#registry") Registry
                     a.navbar-item(href="/wedding#photo-album") Photo Album
             div.navbar-item.has-dropdown.is-hoverable
@@ -28,9 +28,8 @@ aria-label="main navigation")
                     a.navbar-item(href="/wedding#accomodations") Accomodations
                     a.navbar-item(href="/wedding#air-travel") Air Travel
                     a.navbar-item(href="/wedding#transpo") Getting Around NYC
-            if user.admin
-                a.navbar-item(href="/admin") Admin
-               
+            if user.admin 
+                a.navbar-item Admin
         div.navbar-end
             div.navbar-item
                 a.button.is-danger.is-inverted(href="/logout") Logout

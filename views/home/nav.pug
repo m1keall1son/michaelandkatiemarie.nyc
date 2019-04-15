@@ -20,7 +20,7 @@ aria-label="main navigation")
             div.navbar-item.has-dropdown.is-hoverable
                 a.navbar-link.is-arrowless The Wedding
                 div.navbar-dropdown
-                    //a.navbar-item(href="/idocrew") Meet the I Do Crew
+                    a.navbar-item(href="/idocrew") Meet the I Do Crew
                     a.navbar-item(data-id="#registry") Registry
                     a.navbar-item(data-id="#photo-album") Photo Album
             div.navbar-item.has-dropdown.is-hoverable
@@ -30,9 +30,9 @@ aria-label="main navigation")
                     a.navbar-item(data-id="#air-travel") Air Travel
                     a.navbar-item(data-id="#transpo") Getting Around NYC
                     //a.navbar-item(data-id="#city") The City
-            if user.invited
-                div.navbar-item
-                    div.button.is-dark(id="invite-button" data-id="#invite") Your Invitation!
+            if user.admin
+                a.navbar-item(href="/admin") Admin
+                
         div.navbar-end
             div.navbar-item
                 a.button.is-danger.is-inverted(href="/logout") Logout

@@ -1,8 +1,11 @@
 
 $(document).ready(function() {
     $("a.navbar-item").click(function(){
-    	let dst = $($(this).attr("data-id")).offset().top
-    	$("html, body").animate({ scrollTop: dst}, 750)
+        let dataid = $(this).attr("data-id")
+        if(dataid){
+            let dst = $(dataid).offset().top
+            $("html, body").animate({ scrollTop: dst}, 750)
+        }
     })
     //special case
     $("#invite-button").click(function(){

@@ -4,7 +4,11 @@ module.exports = (sequelize, DataTypes) => {
     firstname: DataTypes.STRING,
     lastname: DataTypes.STRING,
     email: DataTypes.STRING,
-    user_id: DataTypes.INTEGER
+    user_id: DataTypes.INTEGER,
+    admin: DataTypes.BOOLEAN,
+    family: DataTypes.STRING,
+    plusone: DataTypes.BOOLEAN,
+    rehearsal: DataTypes.BOOLEAN
 }, {});
   guests.associate = function(models) {
     // associations can be defined here

@@ -6,8 +6,7 @@ module.exports = (sequelize, DataTypes) => {
     email: DataTypes.STRING,
     user_id: DataTypes.INTEGER,
     admin: DataTypes.BOOLEAN,
-    family: DataTypes.STRING,
-    plusone: DataTypes.BOOLEAN,
+    family_id: DataTypes.INTEGER,
     rehearsal: DataTypes.BOOLEAN
 }, {});
   guests.associate = function(models) {

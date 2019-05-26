@@ -61,56 +61,74 @@ function renderPage(req, res, page, id) {
     })
     .then(guest => {
     	log.channel("Frontend").verbose("user is ", guest.firstname, guest.lastname)
+
     	data.user = {
 			state: User.AUTHENTICATED,
 			firstname: guest.firstname,
 			lastname: guest.lastname,
+			id: guest.id,
 			email: guest.email,
 			rehearsal: guest.rehearsal,
 			admin: guest.admin,
-			plusone: guest.plusone,
-			family: []
+			family: {},
+			family_members: []
 		}
 
-    	if(guest.family != "")
-    	{
-    		log.channel("Frontend").verbose("has family associations, looking them up...")
-    		let members = JSON.parse("[" + guest.family + "]");
+		return app.database().Families.findOne({
+			where: { id: guest.family_id }
+		})
+		.then(family => {
+
+    		let fam = {
+    			id: family.id,
+    			name: family.name,
+    			plusone: family.plusone
+    		}
+    		data.user.family = fam
+
     		return app.database().guests.findAll({
-    			where: { user_id: members }
+    			where: { family_id: family.id }
+    		}).then(members => {
+
+    			for(let index = 0; index < members.length; ++index) {
+    				if(members[index].id == data.user.id) 
+    					continue;
+    				let member = {
+						firstname: members[index].firstname,
+						lastname: members[index].lastname,
+						id: members[index].id,
+						email: members[index].email,
+						rehearsal: members[index].rehearsal
+					}
+					data.user.family_members.push(member)
+    			}
+
+	    		res.render('main', data)
     		})
-    		.then(family_members => {
-		    	for(member in family_members) {
-		    		let fam = {
-		    			firstname: member.firstname,
-						lastname: member.lastname,
-						email: member.email,
-						rehearsal: member.rehearsal
-		    		}
-		    		data.user.family.push(fam)
-		    	}
-		    	log.channel("Frontend").verbose("found all family associations, rendering main")
-		    	res.render('main', data)
-		    })
-		    .catch(error => {
-		    	log.channel("Frontend").error("couldn't find the right family member info: ", error)
+    		.catch(error => {
+				log.channel("Frontend").error("couldn't find the other family members info: ", error)
 		    	data = {
 					main: { 
 						page: Page.ERROR
 					}
 				}
 				res.render('main', data)
-		    })
-    	}
-    	else
-    	{
-    		log.channel("Frontend").verbose("no family associations, rendering main")
-    		res.render('main', data)
-    	}
+    		})
+
+	    })
+	    .catch(error => {
+	    	log.channel("Frontend").error("couldn't find the right family info: ", error)
+	    	data = {
+				main: { 
+					page: Page.ERROR
+				}
+			}
+			res.render('main', data)
+	    })
     })
     .catch(error => {
-    	log.channel("Frontend").error("couldn't find the right guest info: ", error);
-    	res.clearCookie('user_sid');
+    	log.channel("Frontend").error("couldn't find the right guest info: ", error)
+    	res.clearCookie('user_sid')
 		req.session.destroy()
     	data = {
     		constants: {
@@ -377,7 +395,7 @@ module.exports = () => {
 				else {
 					req.session.user = user.dataValues;
 					log.channel("Frontend").verbose("login success!");
-	            	res.redirect('/wedding')
+	            	return res.redirect('/wedding')
 				}
 			})
             .catch(error=>{

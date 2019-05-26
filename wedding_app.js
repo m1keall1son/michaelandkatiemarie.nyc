@@ -82,6 +82,103 @@ class WeddingApp extends UTILS.App {
 		})	
 	}
 
+	familyList() {
+		return new Promise((resolve,reject)=>{
+			 this.db.Families.findAll().then(families => resolve(families)).catch(error => reject(error))
+		})	
+	}
+
+	rsvpList() {
+		return new Promise((resolve,reject)=>{
+			 this.db.rsvps.findAll().then(rsvps => resolve(rsvps)).catch(error => reject(error))
+		})	
+	}
+
+	allowPlusOne(family_id) {
+		return new Promise((resolve,reject)=>{
+			this.db.Families.update(
+			{ plusone: true },
+  			{ where: { id: family_id } })
+  			.then(_ => resolve())
+  			.catch(error => reject(error))
+		})	
+	}
+
+	disallowPlusOne(family_id) {
+		return new Promise((resolve,reject)=>{
+			this.db.Families.update(
+			{ plusone: false },
+  			{ where: { id: family_id } })
+  			.then(_ => resolve())
+  			.catch(error => reject(error))
+		})	
+	}
+
+	newFamily(name, plusone) {
+		plusone = plusone || false
+		return new Promise((resolve,reject)=>{
+				this.db.Families.findOrCreate({
+				where: {
+					name: name
+				},
+				defaults: {
+	            	plusone: plusone
+	        	}
+	        })
+	        .then(([family, created]) => resolve(family))
+	        .catch(error => reject(error))
+	    })
+	}
+
+	newGuest(firstname, lastname, email, family_id, rehearsal) {
+		rehearsal = rehearsal || false
+		return new Promise((resolve,reject)=>{
+				this.db.guests.findOrCreate({
+				where: {
+					firstname: firstname,
+					lastname: lastname
+				},
+				defaults: {
+					email: email,
+	            	family_id: family_id,
+	            	rehearsal: rehearsal
+	        	}
+	        })
+	        .then(([guest, created]) => resolve(family))
+	        .catch(error => reject(error))
+	    })
+	}
+
+	addGuestToFamily(guest_id, family_id) {
+		return new Promise((resolve,reject)=>{
+				this.db.guests.Update(
+				{ family_id: family_id },
+  				{ where: { id: guest_id } })
+	        .then(_ => resolve())
+	        .catch(error => reject(error))
+	    })
+	}
+
+	inviteToRehearsal(guest_id) {
+		return new Promise((resolve,reject)=>{
+			this.db.guests.update(
+			{ rehearsal: true },
+  			{ where: { id: guest_id } })
+  			.then(_ => resolve())
+  			.catch(error => reject(error))
+		})	
+	}
+
+	uninviteFromRehearsal(guest_id) {
+		return new Promise((resolve,reject)=>{
+			this.db.guests.update(
+			{ rehearsal: false },
+  			{ where: { id: guest_id } })
+  			.then(_ => resolve())
+  			.catch(error => reject(error))
+		})	
+	}
+
 	isDBConnected(){ return this.db.isConnected() }
 	database(){ return this.db }
 	server(){ return this._server.express_server }

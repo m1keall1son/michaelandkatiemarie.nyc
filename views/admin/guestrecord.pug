@@ -1,55 +1,60 @@
-each record in guestdata
-	div.card
-		div.card-content
-			div.media
-				div.media-content
-					div.title.is-4.is-family-secondary #{record.firstname} #{record.lastname}
-					p.subtitle.is-6 #{record.email}
-				div.media-right
-					div.tags
-						if record.user_id != null
-							span.tag.is-dark Registered
-						else
-							span.tag.is-danger Not Registered
-						if record.admin
-							span.tag.is-primary Admin
-			div.columns
-				div.column.is-one-quarter
-					div.box
-						div.label Guest Options
-						div.container
-							div.field
-								div.control
-									label.checkbox
-										if record.rehearsal
-											input(
-											type="checkbox"
-											name="rehearsal"
-											checked)
-										else
-											input(
-											type="checkbox"
-											name="rehearsal")
-										span  Rehearsal Dinner 
-							div.field
-								div.control
-									label.checkbox
-										if record.plusone
-											input(
-											type="checkbox"
-											name="plusone"
-											checked)
-										else
-											input(
-											type="checkbox"
-											name="plusone")
-										span  Plus one 
-							div.field
-									button.button.is-light.is-small Update
-				div.column
-					div.box
-						div.label RSVP
-	br
+section.hero.is-white
+	div.hero-body
+		div.columns.has-text-centered
+			div.column
+				p.title.is-4.has-text-primary Coming: #{rsvp_totals.yes}
+			div.column
+				p.title.is-4.has-text-danger Regrets: #{rsvp_totals.no}
+br
+h1.title.is-family-secondary.has-text-centered Guest Info
+each family in families
+	div.box
+		div.title.is-4.is-family-secondary #{family.name}
+		each record in family.guests
+			div.card
+				div.card-content
+					div.media
+						div.media-content
+							div.title.is-4.is-family-secondary #{record.firstname} #{record.lastname}
+							p.subtitle.is-6 #{record.email}
+						div.media-right
+							div.tags
+								if record.user_id != null
+									span.tag.is-dark Registered
+								else
+									span.tag.is-danger Not Registered
+								if record.admin
+									span.tag.is-primary Admin
+					div.columns
+						div.column.is-one-quarter
+							div.box
+								div.label Guest Options
+								div.container
+									div.field
+										div.control
+											label.checkbox
+												if record.rehearsal
+													input(name="guest-"+record.id+"-rehearsal"
+													type="checkbox"
+													checked)
+												else
+													input(name="guest-"+record.id+"-rehearsal"
+													type="checkbox")
+												span  Rehearsal Dinner 
+									div.field
+											button.button.is-light.is-small(
+											id="guest-"+record.id+"-update"
+											onclick="updateGuestInfo(" + record.id + ")") Update
+						div.column
+							if record.rsvp == undefined
+								div.box
+									div.label RSVP
+									div.content
+										p Hasn't yet responded
+							else 
+								include rsvp_layout.pug
+								
+			br
 else
 	div.notification.is-danger 
 		p Something went wrong

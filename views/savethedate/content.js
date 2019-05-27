@@ -533,14 +533,22 @@ window.addEventListener('touchcancel', (event)=>{
 function loaded()
 {
 	let header = document.getElementById("header");
+	let sub = document.getElementById("subtext");
+	let gif = document.getElementById("loading");
+
+	if ( !WEBGL.isWebGLAvailable() ) {
+		header.innerHTML = "<a href='/wedding'>Click Here</a>";
+		sub.innerHTML = "Uhoh! Your web browser isn't compatible with webGL, please click the above link to proceed to the login!";
+	    gif.parentNode.removeChild(gif);
+	}
+	else
+	{
 		header.innerHTML = "Click to Start";
-		let sub = document.getElementById("subtext");
 		sub.innerHTML = "There will be sound, plz adjust volume";
-		let gif = document.getElementById("loading");
 		gif.parentNode.removeChild(gif);
 
-	$(document).on('click touch', function (event) {
-		if(!started)
-			run()
-	})
+		$(document).on('click touch', function (event) {
+			if(!started) run()
+		})
+	}
 }

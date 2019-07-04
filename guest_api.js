@@ -159,6 +159,12 @@ module.exports = () => {
 			res.send()
 		})
 
+	api.router.route('/rsvp')
+		.post((req,res) => {
+			console.log(JSON.stringify(req.body))
+			res.status(200).send("OK")
+		});
+
 	api.router.route('/rsvp/yes/:id')
 		.post((req,res)=>{
 			log.channel("API").verbose("rsvp yes: ", req.params.id)

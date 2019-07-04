@@ -1,12 +1,41 @@
 @charset "utf-8";
 @import url('https://fonts.googleapis.com/css?family=Berkshire+Swash|Quattrocento+Sans');
 
+@font-face {
+  font-family: "Natyl-Demo";
+  src: url("./fonts/natyl/NatylDemo.eot"); /* IE9 Compat Modes */
+  src: url("./fonts/natyl/NatylDemo.eot?#iefix") format("embedded-opentype"), /* IE6-IE8 */
+    url("./fonts/natyl/NatylDemo.otf") format("opentype"), /* Open Type Font */
+    url("./fonts/natyl/NatylDemo.svg") format("svg"), /* Legacy iOS */
+    url("./fonts/natyl/NatylDemo.ttf") format("truetype"), /* Safari, Android, iOS */
+    url("./fonts/natyl/NatylDemo.woff") format("woff"), /* Modern Browsers */
+    url("./fonts/natyl/NatylDemo.woff2") format("woff2"); /* Modern Browsers */
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "VtksTatuage2";
+  src: url("./fonts/vtks/VtksTatuage2.eot"); /* IE9 Compat Modes */
+  src: url("./fonts/vtks/VtksTatuage2.eot?#iefix") format("embedded-opentype"), /* IE6-IE8 */
+    url("./fonts/vtks/VtksTatuage2.otf") format("opentype"), /* Open Type Font */
+    url("./fonts/vtks/VtksTatuage2.svg") format("svg"), /* Legacy iOS */
+    url("./fonts/vtks/VtksTatuage2.ttf") format("truetype"), /* Safari, Android, iOS */
+    url("./fonts/vtks/VtksTatuage2.woff") format("woff"), /* Modern Browsers */
+    url("./fonts/vtks/VtksTatuage2.woff2") format("woff2"); /* Modern Browsers */
+  font-weight: normal;
+  font-style: normal;
+}
+
+.is-family-natyl { font-family:'Natyl-Demo'; }
+.is-family-vtks { font-family:'VtksTatuage2'; }
+
 $deep-blue: hsla(234%, 57%, 10%, 1);
 $off-white: #FCF8F2;//hsla(37%, 68%, 96%, 1);
 $dusty-salmon: hsla(3%, 33%, 52%, 1);
 $goldenrod: hsla(39%, 52%, 56%, 1);
 $brown: hsla(34%, 16%, 42%, 1);
-$green: hsl(141, 71%, 48%)
+$green: hsl(141, 71%, 48%);
 
 $black: $deep-blue;
 $red: $dusty-salmon;
@@ -21,15 +50,23 @@ $info: $brown;
 $success: $goldenrod;
 $danger: $dusty-salmon; 
 
+.rsvp-outer { border-style:solid; border-color: $dark; border-width:2px; padding:5px; }
+.rsvp-inner { border-style:solid; border-color: $dark; border-width:1px; padding:20px; }
+
 $family-sans-serif: 'Quattrocento Sans', sans-serif;
 $family-secondary: 'Berkshire Swash', cursive;
 $text: $black;
 $text-strong: $black;
 $text-light: $black;
 
-//phone
+//sizes
 $size-1: 5rem;
 $size-2: 3rem;
+$size-3: 2rem;
+$size-4: 1.5rem;
+$size-5: 1.25rem;
+$size-6: 1rem;
+$size-7: 0.75rem;
 
 $widescreen-enabled: false;
 $fullhd-enabled: false;
@@ -44,16 +81,11 @@ $navbar-item-color: $black;
 $body-background-color: $off-white;
 $background: $off-white;
 
-@import "../node_modules/bulma/bulma.sass"
+$divider-background-color: $dark;
+$divider-thickness: .05rem;
+$divider-font-size: $size-7;
+$divider-color: $dark;
 
-// @import "../node_modules/bulma/sass/utilities/_all.sass";
-// @import "../node_modules/bulma/sass/base/_all.sass";
-// @import "../node_modules/bulma/sass/elements/button.sass";
-// @import "../node_modules/bulma/sass/elements/container.sass";
-// @import "../node_modules/bulma/sass/elements/form.sass";
-// @import "../node_modules/bulma/sass/elements/title.sass";
-// @import "../node_modules/bulma/sass/elements/box.sass";
-// @import "../node_modules/bulma/sass/components/navbar.sass";
-// @import "../node_modules/bulma/sass/layout/hero.sass";
-// @import "../node_modules/bulma/sass/layout/section.sass";
-// @import "../node_modules/bulma/sass/grid/columns.sass";
+@import "../node_modules/bulma/bulma.sass";
+@import "../node_modules/bulma-divider/dist/css/bulma-divider.sass";
+@import "../node_modules/bulma-calendar/src/sass/index.sass";

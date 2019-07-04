@@ -1,5 +1,11 @@
 
 $(document).ready(function() {
+
+    setTimeout(function(){
+        let dst = $("#rsvp").offset().top
+        $("html, body").animate({ scrollTop: dst}, 750)
+    }, 1000)
+
     $("a.navbar-item").click(function(){
         let dataid = $(this).attr("data-id")
         if(dataid){
@@ -15,29 +21,3 @@ $(document).ready(function() {
      	$(".navbar-menu").toggleClass("is-active"); 
     })
 })
-
-function rsvpYes(id) {
-    let req = new XMLHttpRequest();
-    req.addEventListener('load', () => { 
-        $("#rsvp-yes-"+id).toggleClass("is-loading")
-    })
-    req.addEventListener('error', () => { 
-        $("#rsvp-yes-"+id).toggleClass("is-loading")
-    })
-    req.open('POST','/api/rsvp/yes/'+id)
-    req.send()
-    $("#rsvp-yes-"+id).toggleClass("is-loading")
-}
-
-function rsvpNo(id) {
-    let req = new XMLHttpRequest();
-    req.addEventListener('load', () => { 
-        $("#rsvp-no-"+id).toggleClass("is-loading")
-    })
-    req.addEventListener('error', () => { 
-        $("#rsvp-no-"+id).toggleClass("is-loading")
-    })
-    req.open('POST','/api/rsvp/no/'+id)
-    req.send()
-    $("#rsvp-no-"+id).toggleClass("is-loading")
-}

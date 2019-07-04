@@ -1,18 +1,92 @@
+mixin invited(id, firstname, lastname)
+	input.rsvp(type="hidden" data-guestid=id value="")
+	div.columns.has-text-centered
+		div.column
+			div.title.is-4.is-family-vtks= firstname + ' ' + lastname
+		div.column
+			button.button.is-outlined.is-dark.is-small.is-family-vtks.rsvp-yes(data-guestid=id onclick="rsvpYes(" + id + ")") Accepts With Pleasure
+		div.column
+			button.button.is-outlined.is-dark.is-small.is-family-vtks.rsvp-no(data-guestid=id onclick="rsvpNo(" + id + ")") Regretfully Declines
+
+mixin coming(id, firstname, lastname)
+	input.rsvp(type="hidden" data-guestid=id value="yes")
+	div.columns.has-text-centered
+		div.column
+			div.title.is-4.is-family-vtks= firstname + ' ' + lastname
+		div.column
+			button.button.is-success.is-small.is-family-vtks(disabled) Accepted With Pleasure
+		div.column
+			button.button.is-outlined.is-dark.is-small.is-family-vtks.rsvp-no(data-guestid=id onclick="rsvpNo(" + id + ")") Regretfully Declines
+
+mixin notcoming(id, firstname, lastname)
+	input.rsvp(type="hidden" data-guestid=id value="no")
+	div.columns.has-text-centered
+		div.column
+			div.title.is-4.is-family-vtks= firstname + ' ' + lastname
+		div.column
+			button.button.is-outlined.is-dark.is-small.is-family-vtks.rsvp-yes(data-guestid=id onclick="rsvpYes(" + id + ")") Accepts With Pleasure
+		div.column
+			button.button.is-danger.is-small.is-family-vtks(disabled) Regretfully Declined
+script
+	include rsvp.js
 section.section(id="rsvp")
-	h1.title Your RSVP
-	div.content
-		div.box
-			div.title.is-3.is-family-secondary #{user.firstname} #{user.lastname}
-			div.columns.has-text-centered
-				div.column
-					button.button.is-primary.is-fullwidth.is-large(id="rsvp-yes-" + user.id onclick="rsvpYes(" + user.id + ")") I'll be there
-				div.column
-					button.button.is-danger.is-fullwidth.is-large(id="rsvp-no-" + user.id onclick="rsvpNo(" + user.id + ")") Regrets
-		each member in user.family_members
-			div.box
-				div.title.is-family-secondary.is-3 #{member.firstname} #{member.lastname}
-				div.columns.has-text-centered
-					div.column
-						button.button.is-primary.is-fullwidth.is-large(id="rsvp-yes-" + user.id onclick="rsvpYes(" + member.id + ")") I'll be there
-					div.column
-						button.button.is-danger.is-fullwidth.is-large(id="rsvp-no-" + user.id onclick="rsvpNo(" + member.id + ")") Regrets
+	div.card.has-background-dark
+		div.card-content(style="padding:10px;")
+			div.card
+				div.card-content(style="padding:10px;")
+					div.content.rsvp-outer
+						div.content.rsvp-inner
+							div.container.has-text-centered(id="invite")
+								div.is-family-natyl.is-size-2 rsvp
+								br
+								if user.family_members.length > 0
+									div.has-text-centered.is-family-vtks
+										p.help Please indicate the attendance for all members in your party.
+								br
+								if user.family.traveling
+									div.field
+										div.control
+											input(id="arrival" type="hidden" data-familyid=user.family.id value=user.family.arrival)
+											input(id="departure" type="hidden" data-familyid=user.family.id value=user.family.departure)
+											div.label.is-family-vtks Travel Plans
+											input.input(id="stay-duration" data-familyid=user.family.id data-color="dark" data-is-range="true" type="date")
+											script
+												include calendar.js
+									div.field
+										div.control
+											textarea.textarea(id="accomodations" placeholder="Where will your party be staying?" value=user.family.accomodations data-familyid=user.family.id)
+								if user.family_members.length > 0
+									div.is-divider.is-family-vtks.has-text-dark(data-content="Guests")
+								if user.rsvp == "yes"
+									+coming(user.id, user.firstname, user.lastname)
+								else if user.rsvp == "no"
+									+notcoming(user.id, user.firstname, user.lastname)
+								else
+									+invited(user.id, user.firstname, user.lastname)
+
+								div.field
+									div.control
+										input.input.allergies(type="text" placeholder="Allergies or dietary restrictions." value=user.allergies)
+								if user.family_members.length > 0
+									each member in user.family_members
+										br
+										if member.rsvp == "yes"
+											+coming(member.id, member.firstname, member.lastname)
+										else if member.rsvp == "no"
+											+notcoming(member.id, member.firstname, member.lastname)
+										else
+											+invited(member.id, member.firstname, member.lastname)
+										div.field
+											div.control
+												input.input.allergies(type="text"  placeholder="Allergies or dietary restrictions." value=member.allergies)
+								br
+								div.field
+									div.control
+										textarea.textarea(id="rsvp-notes" placeholder="Leave a note for the bride and groom!" value=user.family.notes)
+								div.field
+									div.control.has-text-centered
+										button.button.is-half-width.is-large.is-family-natyl.is-dark(id="send-rsvp" onclick="rsvp(" + user.id + ", " + user.family.id + ")") Send
+										div.help.is-danger.is-hidden(id="required") *Please rsvp for all your guests.
+
+								div.has-text-centered.is-family-vtks Kindly respond by the Sixteenth of August
+

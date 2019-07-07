@@ -72,8 +72,8 @@ function renderPage(req, res, page, id) {
 			admin: guest.admin,
 			family: {},
 			family_members: [],
-			rsvp: "", //todo
-			allergies: "" //todo
+			rsvp: guest.rsvp,
+			allergies: guest.allergies
 		}
 
 		return app.database().Families.findOne({
@@ -84,11 +84,11 @@ function renderPage(req, res, page, id) {
     		let fam = {
     			id: family.id,
     			name: family.name,
-    			arrival: "", //todo
-    			departure: "", //todo
-    			accomodations: "", //todo
-    			notes: "", //todo
-    			traveling: true, //todo
+    			arrival: family.arrival,
+    			departure: family.departure,
+    			accomodations: family.accomodations,
+    			notes: family.notes,
+    			traveling: family.traveling,
     			plusone: family.plusone
     		}
     		data.user.family = fam
@@ -106,8 +106,8 @@ function renderPage(req, res, page, id) {
 						id: members[index].id,
 						email: members[index].email,
 						rehearsal: members[index].rehearsal,
-						rsvp: "", //todo
-						allergies: "" //todo
+						rsvp: members[index].rsvp,
+						allergies: members[index].allergies
 					}
 					data.user.family_members.push(member)
     			}

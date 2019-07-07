@@ -5,11 +5,17 @@ section.hero.is-white
 				p.title.is-4.has-text-primary Coming: #{rsvp_totals.yes}
 			div.column
 				p.title.is-4.has-text-danger Regrets: #{rsvp_totals.no}
+			div.column
+				p.title.is-4.has-text-info Unresponded: #{rsvp_totals.unresponded}
 br
 h1.title.is-family-secondary.has-text-centered Guest Info
 each family in families
 	div.box
 		div.title.is-4.is-family-secondary #{family.name}
+
+		if family.traveling
+			include travel.pug
+
 		each record in family.guests
 			div.card
 				div.card-content
@@ -46,13 +52,7 @@ each family in families
 											id="guest-"+record.id+"-update"
 											onclick="updateGuestInfo(" + record.id + ")") Update
 						div.column
-							if record.rsvp == undefined
-								div.box
-									div.label RSVP
-									div.content
-										p Hasn't yet responded
-							else 
-								include rsvp_layout.pug
+							include rsvp_layout.pug
 								
 			br
 else

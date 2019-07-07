@@ -21,7 +21,7 @@ function rsvp(family_id, user_id){
     	let guest = {}
     	guest.id = rsvps[i].dataset.guestid
     	guest.rsvp = r
-    	guest.allergies = allergies[i].value
+    	guest.allergies = allergies[i].value || ""
     	params.guests.push(guest)
     }
 
@@ -33,11 +33,19 @@ function rsvp(family_id, user_id){
  	let req = new XMLHttpRequest()
     req.addEventListener('load', () => { 
         $("#send-rsvp").toggleClass("is-loading")
-        $("#invite").html("<div class='title is-family-vtks'>Thank You!</div><div class='subtitle is-family-natyl'>Love, Michael and KatieMarie</div>")
-    	let dst = $("#rsvp").offset().top
+        console.log(req)
+        if(req.status == 200){
+        	$("#invite").html("<div class='title is-family-vtks'>Thank You!</div><div class='subtitle is-family-natyl'>Love, Michael and KatieMarie</div>")
+        }
+        else{
+        	$("#invite").html("<div class='title is-family-vtks'>Uh oh! Something went wrong!</div>")
+        }
+
+        let dst = $("#rsvp").offset().top
         $("html, body").animate({ scrollTop: dst}, 750)
     })
     req.addEventListener('error', () => { 
+    	console.log("ERROR")
         $("#send-rsvp").toggleClass("is-loading")
     })
 
@@ -47,6 +55,10 @@ function rsvp(family_id, user_id){
 
     if($("#departure").val() != ""){
     	params.departure = $("#departure").val()
+    }
+
+    if($("#departure").val() != ""){
+    	params.accomodations = $("#accomodations").val()
     }
 
     if($("#rsvp-notes").val() != ""){

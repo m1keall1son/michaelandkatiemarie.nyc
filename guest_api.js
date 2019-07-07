@@ -26,15 +26,18 @@ module.exports = () => {
 					families: [],
 					rsvp_totals: {
 						yes: 0, 
-						no: 0
+						no: 0,
+						unresponded: 0
 					}
 				}
 
 				for(let i = 0; i < rsvps.length; ++i){
-					if(rsvps[i].response == "yes"){
-						data.rsvp_totals.yes++;
+					if(rsvps[i].rsvp == "yes"){
+						data.rsvp_totals.yes++
+					} else if(rsvps[i].rsvp == "no") {
+						data.rsvp_totals.no++
 					} else {
-						data.rsvp_totals.no++;
+						data.rsvp_totals.unresponded++
 					}
 				}
 
@@ -44,6 +47,11 @@ module.exports = () => {
 						name: families[i].name,
 						id: families[i].id,
 						plusone: families[i].plusone,
+						arrival: families[i].arrival,
+						departure: families[i].departure,
+						accomodations: families[i].accomodations,
+						traveling: families[i].traveling,
+						notes: families[i].notes,
 						guests: []
 					}
 
@@ -58,6 +66,7 @@ module.exports = () => {
 							lastname: guests[j].lastname,
 							admin: guests[j].admin,
 							email: guests[j].email,
+							allergies: guests[j].allergies,
 							rehearsal: guests[j].rehearsal,
 							family: guests[j].family_id,
 							user_id: guests[j].user_id,
@@ -65,9 +74,9 @@ module.exports = () => {
 						}
 
 						for(let k = 0; k < rsvps.length; ++k) {
-							if(rsvps[k].guest_id == g.id){
+							if(rsvps[k].id == g.id){
 								let r = {
-									response: rsvps[k].response
+									response: rsvps[k].rsvp
 								}
 								g.rsvp = r
 								break
@@ -161,59 +170,87 @@ module.exports = () => {
 
 	api.router.route('/rsvp')
 		.post((req,res) => {
-			console.log(JSON.stringify(req.body))
-			res.status(200).send("OK")
+
+			log.channel("API").verbose("rsvp response for family: ", JSON.stringify(req.body.family))
+
+			return app.database().Families.findOne({
+				where: {
+					id: req.body.family 
+				}
+	        })
+	        .then(family => {
+
+	            log.channel("API").verbose("retrieved family: ", family.name)
+
+	        	const params = {}
+
+	        	if(family.traveling){
+	        		if(req.body.arrival){
+	        			params.arrival = req.body.arrival;
+	        		}
+
+	        		if(req.body.departure){
+	        			params.departure = req.body.departure;
+	        		}
+
+	        		if(req.body.accomodations){
+	        			params.accomodations = req.body.accomodations;
+	        		}
+	        	}
+
+	        	if(req.body.notes){
+        			params.notes = req.body.notes;
+        		}
+
+        		log.channel("API").verbose("family setting family values: ", JSON.stringify(params))
+
+	        	return family.update(params)
+	        	.then(_=>{
+
+	        		const updates = []
+
+	        		log.channel("API").verbose("guests: ", JSON.stringify(req.body.guests));
+
+	        		for(let i = 0; i < req.body.guests.length; ++i){
+
+	        			let guest = req.body.guests[i]
+
+	        			log.channel("API").verbose("guest response: ", JSON.stringify(guest));
+
+	        			const update = app.database().guests.findOne({
+							where: {
+								id: guest.id 
+							}
+				        }).then(guest_record=>{
+				        	log.channel("API").verbose("setting guest info... ", JSON.stringify(guest))
+				        	return guest_record.update({ allergies: guest.allergies, rsvp: guest.rsvp })
+				        	.then(_=>{  
+				        		log.channel("API").verbose("Successfully updated guest info!")
+				        	})
+				        })
+				        updates.push(update);
+	        		}
+
+	        		return Promise.all(updates)
+	        			.then(_=>{
+	        				res.status(200).send("RSVP received.")
+	        			})
+	        			.catch(error=>{
+	        				log.channel("API").verbose("Something went wrong while updating a guest's rsvp record!")
+				        	res.status(500).send(error)
+	        			})
+	        	})
+	        	.catch(error=>{
+	        		log.channel("API").error("could not find family: ", req.body.family, error)
+	        		res.status(500).send(error)
+	        	})
+	        })
+	        .catch(error=>{
+	        	log.channel("API").error("could not find family: ", req.body.family, error)
+	        	res.status(500).send(error)
+	        })
+
 		});
-
-	api.router.route('/rsvp/yes/:id')
-		.post((req,res)=>{
-			log.channel("API").verbose("rsvp yes: ", req.params.id)
-			return app.database().rsvps.findOrCreate({
-				where: {
-					guest_id: req.params.id 
-				},
-				defaults: {
-	            	guest_id: req.params.id
-	        	}
-	        })
-	        .then(([rsvp,created]) => {
-	        	return rsvp.update({ response: "yes" })
-	        	.then(_=> res.send())
-				.catch(error=>{
-					log.channel("API").error("could not set rsvp response: ", error)
-					res.status(500).send(error)
-				})
-	        })
-	        .catch(error=>{
-	        	log.channel("API").error("could not fond or create rsvp: ", error)
-	        	res.status(500).send(error)
-	        })
-		})
-
-	api.router.route('/rsvp/no/:id')
-		.post((req,res)=>{
-			log.channel("API").verbose("rsvp no: ", req.params.id)
-			return app.database().rsvps.findOrCreate({
-				where: {
-					guest_id: req.params.id 
-				},
-				defaults: {
-	            	guest_id: req.params.id
-	        	}
-	        })
-	        .then(([rsvp,created]) => {
-	        	return rsvp.update({ response: "no" })
-	        	.then(_=> res.send())
-				.catch(error=>{
-					log.channel("API").error("could not set rsvp response: ", error)
-					res.status(500).send(error)
-				})
-	        })
-	        .catch(error=>{
-	        	log.channel("API").error("could not find or create rsvp: ", error)
-	        	res.status(500).send(error)
-	        })
-		})
 
 	return api
 }

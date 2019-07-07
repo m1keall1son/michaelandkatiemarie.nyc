@@ -18,12 +18,12 @@ $(document).ready(function() {
 
 	if($("#arrival").val() != "")
 	{
-		opions.startDate = new Date( $("#departure").val() + '/2019')
+		options.startDate = new Date( $("#arrival").val() + '/2019')
 	}
 
 	if($("#departure").val() != "")
 	{
-		opions.endDate = new Date( $("#departure").val() + '/2019')
+		options.endDate = new Date( $("#departure").val() + '/2019')
 	}
 
 	bulmaCalendar.attach('#stay-duration', options);

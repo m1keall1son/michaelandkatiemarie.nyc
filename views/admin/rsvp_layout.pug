@@ -1,8 +1,19 @@
-if record.rsvp.response == "yes"
-	div.notification.is-primary
-		div.label RSVP
-			p I am coming
+if record.rsvp != undefined
+	if record.rsvp.response == "yes"
+		div.notification.is-primary
+			div.label RSVP
+				p I am coming
+	else if record.rsvp.response == "no"
+		div.notification.is-danger
+			div.label RSVP
+				p I send my regrets
+	else if record.rsvp.response == ""
+		div.box
+			div.label RSVP
+			div.content
+				p Hasn't responded yet
 else
-	div.notification.is-danger
+	div.box
 		div.label RSVP
-			p I send my regrets
+		div.content
+			p Hasn't responded yet

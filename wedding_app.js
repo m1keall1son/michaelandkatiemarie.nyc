@@ -90,7 +90,9 @@ class WeddingApp extends UTILS.App {
 
 	rsvpList() {
 		return new Promise((resolve,reject)=>{
-			 this.db.rsvps.findAll().then(rsvps => resolve(rsvps)).catch(error => reject(error))
+			 this.db.guests.findAll({
+			   attributes: ['id', 'rsvp']
+			 }).then(rsvps => resolve(rsvps)).catch(error => reject(error))
 		})	
 	}
 

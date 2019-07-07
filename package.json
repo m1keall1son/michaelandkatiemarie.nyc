@@ -20,20 +20,22 @@
   "author": "michael allison",
   "license": "ISC",
   "dependencies": {
-    "bulma": "^0.7.4",
+    "bulma": "^0.7.5",
     "bulma-calendar": "^6.0.7",
     "bulma-divider": "^0.2.0",
     "connect-session-sequelize": "^6.0.0",
     "dotenv": "^6.2.0",
-    "node-sass": "^4.11.0",
-    "node-ses": "^2.2.0",
+    "node-sass": "^4.12.0",
+    "node-ses": "^2.2.1",
     "nodemailer": "^5.1.1",
-    "sequelize": "^4.42.0",
-    "sequelize-cli": "^5.5.0",
+    "sequelize": "^5.9.4",
     "utils": "file:./utils"
   },
   "repository": {
     "type": "git",
     "url": "https://github.com/m1keall1son/michaelandkatiemarie.nyc.git"
+  },
+  "devDependencies": {
+    "sequelize-cli": "^5.5.0"
   }
 }

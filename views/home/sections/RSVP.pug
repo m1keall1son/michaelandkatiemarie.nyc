@@ -54,7 +54,7 @@ section.section(id="rsvp")
 												include calendar.js
 									div.field
 										div.control
-											textarea.textarea(id="accomodations" placeholder="Where will your party be staying?" value=user.family.accomodations data-familyid=user.family.id)
+											textarea.textarea(id="accomodations" placeholder="Where will your party be staying?" data-familyid=user.family.id) #{user.family.accomodations}
 								if user.family_members.length > 0
 									div.is-divider.is-family-vtks.has-text-dark(data-content="Guests")
 								if user.rsvp == "yes"
@@ -78,14 +78,14 @@ section.section(id="rsvp")
 											+invited(member.id, member.firstname, member.lastname)
 										div.field
 											div.control
-												input.input.allergies(type="text"  placeholder="Allergies or dietary restrictions." value=member.allergies)
+												input.input.allergies(type="text"  placeholder="Allergies or dietary restrictions." value=member.allergies) 
 								br
-								div.field
-									div.control
-										textarea.textarea(id="rsvp-notes" placeholder="Leave a note for the bride and groom!" value=user.family.notes)
+								//div.field
+									//div.control
+										//textarea.textarea(id="rsvp-notes" placeholder="Leave a note for the bride and groom!") #{user.family.notes}
 								div.field
 									div.control.has-text-centered
-										button.button.is-half-width.is-large.is-family-natyl.is-dark(id="send-rsvp" onclick="rsvp(" + user.id + ", " + user.family.id + ")") Send
+										button.button.is-half-width.is-large.is-family-natyl.is-dark(id="send-rsvp" onclick="rsvp(" + user.family.id + ", " + user.id + ")") Send
 										div.help.is-danger.is-hidden(id="required") *Please rsvp for all your guests.
 
 								div.has-text-centered.is-family-vtks Kindly respond by the Sixteenth of August

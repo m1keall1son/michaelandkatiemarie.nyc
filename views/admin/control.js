@@ -15,10 +15,10 @@ $(document).ready(function() {
 
 function updateGuestInfo(id) {
 	let req = new XMLHttpRequest();
-    req.addEventListener('load', () => { 
+    req.addEventListener('load', function() { 
     	$("#guest-"+id+"-update").toggleClass("is-loading")
     })
-    req.addEventListener('error', () => { 
+    req.addEventListener('error', function() { 
     	$("#guest-"+id+"-update").toggleClass("is-danger")
     	$("#guest-"+id+"-update").toggleClass("is-loading")
     })

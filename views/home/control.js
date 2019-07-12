@@ -18,10 +18,10 @@ $(document).ready(function() {
 
 function rsvpYes(id) {
     let req = new XMLHttpRequest();
-    req.addEventListener('load', () => { 
+    req.addEventListener('load', function(){ 
         $("#rsvp-yes-"+id).toggleClass("is-loading")
     })
-    req.addEventListener('error', () => { 
+    req.addEventListener('error', function(){ 
         $("#rsvp-yes-"+id).toggleClass("is-loading")
     })
     req.open('POST','/api/rsvp/yes/'+id)
@@ -31,10 +31,10 @@ function rsvpYes(id) {
 
 function rsvpNo(id) {
     let req = new XMLHttpRequest();
-    req.addEventListener('load', () => { 
+    req.addEventListener('load', function(){ 
         $("#rsvp-no-"+id).toggleClass("is-loading")
     })
-    req.addEventListener('error', () => { 
+    req.addEventListener('error', function(){ 
         $("#rsvp-no-"+id).toggleClass("is-loading")
     })
     req.open('POST','/api/rsvp/no/'+id)

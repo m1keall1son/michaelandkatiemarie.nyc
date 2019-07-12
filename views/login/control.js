@@ -30,7 +30,7 @@ function register_get(event)
 	event.preventDefault()
 	event.stopPropagation()
 	let req = new XMLHttpRequest();
-	req.onreadystatechange = ()=> {
+	req.onreadystatechange = function () {
 	    if (req.readyState == XMLHttpRequest.DONE) {
 	    	console.log("made it")
 	    	console.log(req.responseText)

@@ -7,6 +7,9 @@ module.exports = (sequelize, DataTypes) => {
     arrival: DataTypes.STRING,
     departure: DataTypes.STRING,
     accomodations: DataTypes.STRING,
+    address: DataTypes.STRING,
+    address2: DataTypes.STRING,
+    zip: DataTypes.STRING,
     notes: DataTypes.STRING
   }, {});
   Family.associate = function(models) {

@@ -14,7 +14,7 @@ mixin coming(id, firstname, lastname)
 		div.column
 			div.title.is-4.is-family-vtks= firstname + ' ' + lastname
 		div.column
-			button.button.is-success.is-small.is-family-vtks(disabled) Accepted With Pleasure
+			button.button.is-success.is-small.is-family-vtks.rsvp-yes(disabled data-guestid=id onclick="rsvpYes(" + id + ")") Accepted With Pleasure
 		div.column
 			button.button.is-outlined.is-dark.is-small.is-family-vtks.rsvp-no(data-guestid=id onclick="rsvpNo(" + id + ")") Regretfully Declines
 
@@ -26,7 +26,7 @@ mixin notcoming(id, firstname, lastname)
 		div.column
 			button.button.is-outlined.is-dark.is-small.is-family-vtks.rsvp-yes(data-guestid=id onclick="rsvpYes(" + id + ")") Accepts With Pleasure
 		div.column
-			button.button.is-danger.is-small.is-family-vtks(disabled) Regretfully Declined
+			button.button.is-danger.is-small.is-family-vtks.rsvp-no(disabled data-guestid=id onclick="rsvpNo(" + id + ")") Regretfully Declined
 script
 	include rsvp.js
 section.section(id="rsvp")
@@ -41,22 +41,9 @@ section.section(id="rsvp")
 								br
 								if user.family_members.length > 0
 									div.has-text-centered.is-family-vtks
-										p.help Please indicate the attendance for all members in your party.
+										p Please indicate the attendance for all members in your party.
 								br
-								if user.family.traveling
-									div.field
-										div.control
-											input(id="arrival" type="hidden" data-familyid=user.family.id value=user.family.arrival)
-											input(id="departure" type="hidden" data-familyid=user.family.id value=user.family.departure)
-											div.label.is-family-vtks Travel Plans
-											input.input(id="stay-duration" data-familyid=user.family.id data-color="dark" data-is-range="true" type="date")
-											script
-												include calendar.js
-									div.field
-										div.control
-											textarea.textarea(id="accomodations" placeholder="Where will your party be staying?" data-familyid=user.family.id) #{user.family.accomodations}
-								if user.family_members.length > 0
-									div.is-divider.is-family-vtks.has-text-dark(data-content="Guests")
+
 								if user.rsvp == "yes"
 									+coming(user.id, user.firstname, user.lastname)
 								else if user.rsvp == "no"
@@ -64,11 +51,18 @@ section.section(id="rsvp")
 								else
 									+invited(user.id, user.firstname, user.lastname)
 
-								div.field
-									div.control
-										input.input.allergies(type="text" placeholder="Allergies or dietary restrictions." value=user.allergies)
+								if user.family_members.length == 0
+									br
+
+								div.field.is-horizontal
+									div.field-label.label.is-family-vtks.help Food Allergies
+									div.field-body
+										div.field
+											div.control
+												input.input.is-small.allergies(type="text" placeholder="Allergies or dietary restrictions." value=user.allergies onchange="showSendButton()")
 								if user.family_members.length > 0
 									each member in user.family_members
+										br
 										br
 										if member.rsvp == "yes"
 											+coming(member.id, member.firstname, member.lastname)
@@ -76,17 +70,66 @@ section.section(id="rsvp")
 											+notcoming(member.id, member.firstname, member.lastname)
 										else
 											+invited(member.id, member.firstname, member.lastname)
-										div.field
-											div.control
-												input.input.allergies(type="text"  placeholder="Allergies or dietary restrictions." value=member.allergies) 
+
+										div.field.is-horizontal
+											div.field-label.label.is-family-vtks.help Food Allergies
+											div.field-body
+												div.field
+													div.control
+														input.input.is-small.allergies(type="text"  placeholder="Allergies or dietary restrictions." value=member.allergies onchange="showSendButton()") 
+								if user.family.traveling
+									div.is-divider.is-family-vtks.has-text-dark(data-content="Travel Info")
+									div.field.is-horizontal
+										div.field-label.has-text-left
+											div.label.is-family-vtks Accomodations
+												span.has-text-danger *
+										div.field-body
+											div.field(id="accomodations-name-container")
+												div.control
+													input.input(id="accomodations-name" type="text" placeholder="The Hoxton, AirBnb, etc." data-familyid=user.family.id onchange="showSendButton()" value=user.family.accomodations)
+									div.field.is-horizontal
+										div.field-label.has-text-left
+											div.label.is-family-vtks Arrival Date
+												span.has-text-danger *
+										div.field-body
+											div.field(id="arrival-container")
+												script
+													include calendar.js
+												div.control
+													input(id="arrival" type="hidden" data-familyid=user.family.id value=user.family.arrival)
+													input.input(id="stay-duration" data-familyid=user.family.id data-color="dark" type="date" onchange="showSendButton()")
+									div.field.is-horizontal
+										div.field-label.has-text-left
+											div.label.is-family-vtks Address
+												span.has-text-danger *
+										div.field-body
+											div.field(id="accomodations-add1-container")
+												div.control
+													input.input(id="accomodations-add1" type="text" placeholder="123 Main st." data-familyid=user.family.id onchange="showSendButton()" value=user.family.address)
+									div.field.is-horizontal
+										div.field-label.has-text-left
+											div.label.is-family-vtks 
+										div.field-body
+											div.field
+												div.control
+													input.input(id="accomodations-add2" type="text" placeholder="Suite/Apt/Room #" data-familyid=user.family.id onchange="showSendButton()" value=user.family.address2)
+									div.field.is-horizontal
+										div.field-label.has-text-left
+											div.label.is-family-vtks Zip Code
+												span.has-text-danger *
+										div.field-body
+											div.field(id="accomodations-zip-container")
+												div.control
+													input.input(id="accomodations-zip" type="number" placeholder="11211" data-familyid=user.family.id onchange="showSendButton()" value=user.family.zip)
+									div.help.has-text-danger.is-family-vtks.has-text-left (*Required)
+									div.is-divider.is-family-vtks.has-text-dark
+
 								br
-								//div.field
-									//div.control
-										//textarea.textarea(id="rsvp-notes" placeholder="Leave a note for the bride and groom!") #{user.family.notes}
 								div.field
 									div.control.has-text-centered
-										button.button.is-half-width.is-large.is-family-natyl.is-dark(id="send-rsvp" onclick="rsvp(" + user.family.id + ", " + user.id + ")") Send
+										button.button.is-half-width.is-large.is-family-natyl.is-dark.is-hidden(id="send-rsvp" onclick="rsvp(" + user.family.id + ", " + user.id + ", "+ user.family.traveling+")") Send
 										div.help.is-danger.is-hidden(id="required") *Please rsvp for all your guests.
+
 
 								div.has-text-centered.is-family-vtks Kindly respond by the Sixteenth of August
 

@@ -86,12 +86,13 @@ function renderPage(req, res, page, id) {
     		let fam = {
     			id: family.id,
     			name: family.name,
-    			arrival: family.arrival,
-    			departure: family.departure,
-    			accomodations: family.accomodations,
-    			notes: family.notes,
     			traveling: family.traveling,
-    			plusone: family.plusone
+    			plusone: family.plusone,
+    			arrival: family.arrival,
+    			accomodations: family.accomodations,
+    			address: family.address,
+    			address2: family.address2,
+    			zip: family.zip
     		}
     		data.user.family = fam
 

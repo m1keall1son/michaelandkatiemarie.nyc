@@ -17,10 +17,6 @@ function setupCalendars() {
         {
             options.startDate = new Date( $("#arrival-" + family).val() + '/2019')
         }
-        if($("#departure-" + family).val() != "")
-        {
-            options.endDate = new Date( $("#departure-" + family).val() + '/2019')
-        }
         bulmaCalendar.attach('#stay-duration-'+family, options);
     })
 }

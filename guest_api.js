@@ -177,18 +177,13 @@ module.exports = () => {
 	        			params.arrival = req.body.arrival;
 	        		}
 
-	        		if(req.body.departure){
-	        			params.departure = req.body.departure;
-	        		}
-
 	        		if(req.body.accomodations){
-	        			params.accomodations = req.body.accomodations;
+	        			params.accomodations = req.body.accomodations.name;
+	        			params.address = req.body.accomodations.address;
+	        			params.address2 = req.body.accomodations.address2;
+	        			params.zip = req.body.accomodations.zip;
 	        		}
 	        	}
-
-	        	if(req.body.notes){
-        			params.notes = req.body.notes;
-        		}
 
         		log.channel("API").verbose("family setting family values: ", JSON.stringify(params))
 

@@ -60,6 +60,10 @@ section.section(id="rsvp")
 										div.field
 											div.control
 												input.input.is-small.allergies(type="text" placeholder="Allergies or dietary restrictions." value=user.allergies onchange="showSendButton()")
+
+								div.content(id="plusone-content")
+									include plusone.pug
+
 								if user.family_members.length > 0
 									each member in user.family_members
 										br

@@ -9,7 +9,8 @@ module.exports = (sequelize, DataTypes) => {
     family_id: DataTypes.INTEGER,
     rehearsal: DataTypes.BOOLEAN,
     rsvp: DataTypes.STRING,
-    allergies: DataTypes.STRING
+    allergies: DataTypes.STRING,
+    is_plusone: DataTypes.BOOLEAN
 }, {});
   guests.associate = function(models) {
     // associations can be defined here

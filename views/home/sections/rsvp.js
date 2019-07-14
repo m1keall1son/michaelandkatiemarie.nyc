@@ -184,3 +184,46 @@ function rsvpNo(id) {
 	}
 	showSendButton()
 }
+
+function addGuest(id) {
+
+}
+
+function plusone(id, response, rehearsal, plusone_id){
+
+	let url = "/api/update/family/"+ id +"/plusone/"
+
+	if(plusone_id == null){
+		url = "/api/new/family/"+ id +"/plusone/"
+	}
+
+	let params = {
+		plusone_id: plusone_id,
+		firstname:
+		lastname:
+		rsvp: response,
+		rehearsal: rehearsal
+	}
+
+	let req = new XMLHttpRequest()
+    req.addEventListener('load', function() { 
+        $("#plusone-yes").toggleClass("is-loading")
+        if(req.status == 200){
+        	$("#plusone-content").html(req.responseText)
+        }
+        else{
+        	console.log(req)
+        	$("#plusone-content").html("<div class='title is-family-vtks'>Uh oh! Something went wrong! reload the page and try again.</div>")
+        }
+    })
+    req.addEventListener('error', function() { 
+    	console.log("ERROR")
+    	$("#plusone-yes").toggleClass("is-loading")
+    })
+
+    req.open('POST', url, true)
+  	req.setRequestHeader( "Content-Type", "application/json" )
+    req.send(JSON.stringify(params))
+
+    $("#plusone-yes").toggleClass("is-loading")
+}

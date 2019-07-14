@@ -56,6 +56,7 @@ module.exports = () => {
 						address: families[i].address,
 						address2: families[i].address2,
 						zip: families[i].zip,
+						plusone_id: familes[i].plusone_id,
 						guests: []
 					}
 
@@ -74,19 +75,24 @@ module.exports = () => {
 							rehearsal: guests[j].rehearsal,
 							family: guests[j].family_id,
 							user_id: guests[j].user_id,
-							rsvp: null
+							rsvp: null,
+							is_plusone: guests[j].is_plusone
 						}
 
-						for(let k = 0; k < rsvps.length; ++k) {
-							if(rsvps[k].id == g.id){
-								let r = {
-									response: rsvps[k].rsvp
+						if(guests[j].is_plusone){
+							f.guest = g
+						}else{
+							for(let k = 0; k < rsvps.length; ++k) {
+								if(rsvps[k].id == g.id){
+									let r = {
+										response: rsvps[k].rsvp
+									}
+									g.rsvp = r
+									break
 								}
-								g.rsvp = r
-								break
 							}
+							f.guests.push(g)
 						}
-						f.guests.push(g)
 					}
 					data.families.push(f)
 				}
@@ -123,7 +129,7 @@ module.exports = () => {
 			.catch(error=>res.status(500).send(error))
 		})
 
-	api.router.route('/family/:id/new/guest')
+	api.router.route('new/family/:id/guest')
 		.post((req,res)=>{
 			return app.newGuest(req.body.firstname, req.body.lastname, req.body.email, req.body.family_id, req.body.rehearsal)
 			.then(_=> res.send())
@@ -144,6 +150,79 @@ module.exports = () => {
 			}
 			//default
 			res.send()
+		})
+
+	api.router.route('/new/family/:id/plusone')
+		.post((req,res)=>{
+			log.channel("API").verbose("creating new plusone record for family:", req.params.id)
+			return app.database().guests.create({
+				firstname: req.body.firstname || "",
+				lastname: req.body.lastname || "",
+				rsvp: req.body.rsvp,
+				rehearsal: req.body.rehearsal,
+				family_id: req.params.id
+	        }).then(guest => {
+	        		log.channel("API").verbose("created new plusone guest:", guest.id)
+	        		return app.database().Families.findOne({ where: { id: req.params.id } })
+		        	.then(fam=>{
+		        		return fam.update({ plusone_id: guest.id })
+		        		.then(_=>{
+		        			log.channel("API").verbose("updated family with new plusone id")
+			        		const params = {
+								user : {
+									family: {
+										id: req.params.id,
+										plusone: true
+									},
+									guest: {
+										id: guest.id,
+										firstname: "",
+										lastname: "",
+										rsvp: "",
+										allergies: ""
+									},
+									rehearsal: req.body.rehearsal
+								}
+							}
+							res.status(200).render("home/sections/plusone.pug", params)
+		        		}).catch(error=>res.status(500).send(error))
+		        	}).catch(error=>res.status(500).send(error))
+	        }).catch(error=>res.status(500).send(error))
+		})
+
+	api.router.route('update/family/plusone/:id')
+		.post((req,res)=>{
+			log.channel("API").verbose("updating family: ", req.params.id, " plusone, with: ", JSON.stringify(req.body))
+			return app.database().guests.findOne({ where : { id: req.body.plusone_id, family_id: req.params.id } })
+			.then(guest => {
+				return guest.update({ 
+					firstname: req.body.firstname,
+					lastname: req.body.lastname, 
+					rehearsal: req.body.rehearsal,
+					rsvp: req.body.rsvp
+				}).then(guest=> {
+
+					const params = {
+						user : {
+							family: {
+								id: req.params.id,
+								plusone: true
+							},
+							guest: {
+								id: guest.id,
+								firstname: guest.firstname,
+								lastname: guest.lastname,
+								rsvp: guest.rsvp,
+								allergies: guest.allergies
+							},
+							rehearsal: req.body.rehearsal
+						}
+					}
+					res.render("home/sections/plusone.pug", params)
+
+				}).catch(error=>res.status(500).send(error))
+			})
+			.catch(error=>res.status(500).send(error))
 		})
 
 	api.router.route('/update/family/travel/:id')

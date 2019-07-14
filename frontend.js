@@ -73,6 +73,7 @@ function renderPage(req, res, page, id) {
 			rehearsal: guest.rehearsal,
 			admin: guest.admin,
 			family: {},
+			guest: null,
 			family_members: [],
 			rsvp: guest.rsvp,
 			allergies: guest.allergies
@@ -92,12 +93,13 @@ function renderPage(req, res, page, id) {
     			accomodations: family.accomodations,
     			address: family.address,
     			address2: family.address2,
-    			zip: family.zip
+    			zip: family.zip,
+    			plusone_id: family.plusone_id
     		}
     		data.user.family = fam
 
     		return app.database().guests.findAll({
-    			where: { family_id: family.id }
+    			where: { family_id: family.id, is_plusone: false }
     		}).then(members => {
 
     			for(let index = 0; index < members.length; ++index) {
@@ -114,6 +116,35 @@ function renderPage(req, res, page, id) {
 					}
 					data.user.family_members.push(member)
     			}
+
+    			//retrieve plus one info
+    			if(family.plusone_id != null){
+
+    				return app.database().guests.findOne({
+		    			where: { id: family.plusone_id }
+		    		}).then(guest => {
+
+		    			let _guest = {
+			    			firstname: guest.firstname,
+			    			lastname: guest.lastname,
+			    			allergies: guest.allergies,
+			    			rsvp: guest.rsvp
+			    		}
+
+		    			data.user.guest = _guest
+
+		    			res.render('main', data)
+
+		    		}).catch(error => {
+						log.channel("Frontend").error("couldn't find the plus one guest info: ", error)
+				    	data = {
+							main: { 
+								page: Page.ERROR
+							}
+						}
+						res.render('main', data)
+		    		})
+				}
 
 	    		res.render('main', data)
     		})

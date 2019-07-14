@@ -10,7 +10,8 @@ module.exports = (sequelize, DataTypes) => {
     address: DataTypes.STRING,
     address2: DataTypes.STRING,
     zip: DataTypes.STRING,
-    notes: DataTypes.STRING
+    notes: DataTypes.STRING,
+    plusone_id: DataTypes.INTEGER
   }, {});
   Family.associate = function(models) {
     // associations can be defined here

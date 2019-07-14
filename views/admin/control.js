@@ -1,23 +1,38 @@
+function setupCalendar(id) {
+    const options = {
+        minDate: '10/01/2019',
+        maxDate: '11/2/2019',
+        lang: 'en',
+        labelFrom: 'Arrival',
+        closeOnSelect: true,
+        showHeader: false,
+        dateFormat: "MM/DD",
+        showButtons: false
+    }
+    if($("#arrival-" + id).val() != "")
+    {
+        options.startDate = new Date( $("#arrival-" + id).val() + '/2019')
+    }
+    bulmaCalendar.attach('#cal-arrival-'+id, options)
+
+    const element = document.querySelector('#cal-arrival-'+id)
+    if (element) {
+        // bulmaCalendar instance is available as element.bulmaCalendar
+        element.bulmaCalendar.on('select', function(datepicker) {
+            if($("#arrival-" + id).val() != datepicker.data.value()){
+                if($("#update-travel-" + id).hasClass("is-hidden")){
+                    $("#update-travel-" + id).toggleClass("is-hidden")
+                }
+                $("#arrival-" + id).val(datepicker.data.value())
+            }
+        });
+    }
+}
 
 function setupCalendars() {
     $('.stay-duration').each(function(index, calendar) {
         const family = calendar.dataset.familyid;
-        const options = {
-            minDate: '10/01/2019',
-            maxDate: '11/2/2019',
-            lang: 'en',
-            labelFrom: 'From',
-            labelTo: 'To',
-            closeOnSelect: true,
-            showHeader: false,
-            dateFormat: "MM/DD",
-            showButtons: false
-        }
-        if($("#arrival-" + family).val() != "")
-        {
-            options.startDate = new Date( $("#arrival-" + family).val() + '/2019')
-        }
-        bulmaCalendar.attach('#stay-duration-'+family, options);
+        setupCalendar(family)
     })
 }
 
@@ -63,6 +78,12 @@ function showFamUpdateBtn(id){
     }
 }
 
+function showFamUpdateTravelBtn(id){
+    if($("#update-travel-"+id).hasClass("is-hidden")){
+        $("#update-travel-"+id).toggleClass("is-hidden")
+    }
+}
+
 function updateGuestInfo(id) {
     const params = { 
         rehearsal: $("input[name='guest-"+id+"-rehearsal']").is(':checked'),
@@ -98,8 +119,9 @@ function updateFamilyInfo(id) {
 
         if(!params.traveling && !$("#travel-details-"+id).hasClass("is-hidden")){
             $("#travel-details-"+id).addClass("is-hidden")
-        }else if(params.traveling && $("#travel-details-"+id).hasClass("is-hidden")){
-            $("#travel-details-"+id).removeClass("is-hidden")
+        }else {
+            $("#record-content-travel-"+id).html(req.responseText)
+            setupCalendar(id)
         }
 
     })
@@ -111,6 +133,31 @@ function updateFamilyInfo(id) {
     req.setRequestHeader( "Content-Type", "application/json" )
     req.send(JSON.stringify(params))
     $("#family-"+id+"-update").toggleClass("is-loading")
+}
+
+function updateFamilyTravelInfo(id) {
+
+    const params = {
+        arrival: $('#arrival-'+id).val(),
+        accomodations: $('#accomodations-'+id).val(),
+        address: $('#address-'+id).val(),
+        address2: $('#address2-'+id).val(),
+        zip: $('#zip-'+id).val(),
+    }
+
+    const req = new XMLHttpRequest();
+    req.addEventListener('load', function() { 
+        $("#update-travel-"+id).toggleClass("is-loading")
+        $("#update-travel-"+id).toggleClass("is-hidden")
+    })
+    req.addEventListener('error', function() { 
+        $("#update-travel-"+id).toggleClass("is-danger")
+        $("#update-travel-"+id).toggleClass("is-loading")
+    })
+    req.open('POST','/api/update/family/travel/'+id, true)
+    req.setRequestHeader( "Content-Type", "application/json" )
+    req.send(JSON.stringify(params))
+    $("#update-travel-"+id).toggleClass("is-loading")
 }
 
 function rsvp(id, response) {

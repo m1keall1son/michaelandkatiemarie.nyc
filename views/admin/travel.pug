@@ -1,12 +1,28 @@
 div.columns(id="travel-details-"+family.id)
 	div.column
-		div.field
-			div.control
-				input(id="arrival-" + family.id type="hidden" value=family.arrival)
-				div.label Travel Plans
-				input.input.stay-duration(id="cal-arrival-" + family.id data-display-mode="inline" data-familyid=family.id data-color="dark" type="date" readonly)
+		div.field.is-horizontal
+			div.field-label Arrival Date
+			div.field-body
+				div.field
+					div.control
+						input(id="arrival-" + family.id type="hidden" value=family.arrival)
+						input.input.stay-duration(id="cal-arrival-" + family.id data-display-mode="inline" data-familyid=family.id data-color="dark" type="date")
 	div.column
 		div.contanter
 			div.content
-				div.label Accomodations
-				p #{family.accomodations}
+				div.field
+					div.label Accomodations
+					div.control
+						input.input(id="accomodations-"+family.id type="text" data-familyid=family.id value=family.accomodations onchange="showFamUpdateTravelBtn("+family.id+")")
+				div.field
+					div.label Address
+					div.control
+						input.input(id="address-"+family.id type="text" data-familyid=family.id value=family.address onchange="showFamUpdateTravelBtn("+family.id+")")
+					div.control
+						input.input(id="address2-"+family.id type="text" data-familyid=family.id value=family.address2 onchange="showFamUpdateTravelBtn("+family.id+")")
+				div.field
+					div.label Zip
+					div.control
+						input.input(id="zip-"+family.id type="number" data-familyid=family.id value=family.zip onchange="showFamUpdateTravelBtn("+family.id+")")
+button.button.is-fullwidth.is-info.is-hidden(id="update-travel-"+family.id onclick="updateFamilyTravelInfo("+family.id+")") Update Travel Info
+br

@@ -51,10 +51,11 @@ module.exports = () => {
 						id: families[i].id,
 						plusone: families[i].plusone,
 						arrival: families[i].arrival,
-						departure: families[i].departure,
 						accomodations: families[i].accomodations,
 						traveling: families[i].traveling,
-						notes: families[i].notes,
+						address: families[i].address,
+						address2: families[i].address2,
+						zip: families[i].zip,
 						guests: []
 					}
 
@@ -145,13 +146,33 @@ module.exports = () => {
 			res.send()
 		})
 
+	api.router.route('/update/family/travel/:id')
+		.post((req,res) => {
+			log.channel("API").verbose("updating family: ", req.params.id, " with: ", JSON.stringify(req.body))
+			return app.database().Families.findOne({ where : { id: req.params.id } })
+			.then(family => {
+				return family.update({ 
+					arrival: req.body.arrival,
+					accomodations: req.body.accomodations, 
+					address: req.body.address,
+					address2: req.body.address2,
+					zip: req.body.zip,
+				}).then(_=> res.send()).catch(error=>res.status(500).send(error))
+			})
+			.catch(error=>res.status(500).send(error))
+		})
 
 	api.router.route('/update/family/:id')
 		.post((req,res) => {
 			log.channel("API").verbose("updating family: ", req.params.id, " with: ", JSON.stringify(req.body))
 			return app.database().Families.findOne({ where : { id: req.params.id } })
 			.then(family => {
-				return family.update({ plusone: req.body.plusone, traveling: req.body.traveling }).then(_=> res.send()).catch(error=>res.status(500).send(error))
+				return family.update({ plusone: req.body.plusone, traveling: req.body.traveling }).then(family => {
+					const params = {
+						family : family
+					}
+					res.render("admin/travel.pug", params)
+				}).catch(error=>res.status(500).send(error))
 			})
 			.catch(error=>res.status(500).send(error))
 		})

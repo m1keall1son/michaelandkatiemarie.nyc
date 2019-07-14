@@ -58,9 +58,10 @@ each family in families
 								id="family-"+family.id+"-update"
 								onclick="updateFamilyInfo(" + family.id + ")") Update
 
-			div.content
-				if family.traveling
-					include travel.pug
+			div.content(id="record-content-"+family.id)
+				div.content(id="record-content-travel-"+family.id)
+					if family.traveling
+						include travel.pug
 
 				each record in family.guests
 					div.card

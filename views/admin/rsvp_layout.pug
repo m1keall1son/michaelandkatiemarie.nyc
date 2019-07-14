@@ -1,22 +1,26 @@
 if record.rsvp != undefined
 	if record.rsvp.response == "yes"
 		div.notification.is-primary
-			div.label RSVP
+			div.label.is-family-secondary RSVP
+			div.content
 				p I am coming
+				p Food allergies: #{record.allergies}
 		button.button.is-outlined.is-danger(id="#rsvp-control-" + record.id onclick="rsvp("+record.id+", 'cancelled')") Cancel RSVP
 	else if record.rsvp.response == "no"
 		div.notification.is-danger
-			div.label RSVP
+			div.label.is-family-secondary RSVP
+			div.content
 				p I send my regrets
 		button.button.is-outlined.is-primary(id="#rsvp-control-" + record.id onclick="rsvp("+record.id+", 'yes')") RSVP yes
 	else if record.rsvp.response == "cancelled"
 		div.notification.is-danger
-			div.label RSVP
+			div.label.is-family-secondary RSVP
+			div.content
 				p My RSVP was cancelled by an admin
 		button.button.is-outlined.is-primary(id="#rsvp-control-" + record.id onclick="rsvp("+record.id+", 'yes')") RSVP yes
 	else if record.rsvp.response == ""
 		div.box
-			div.label RSVP
+			div.label.is-family-secondary RSVP
 			div.content
 				p Hasn't responded yet
 		div.columns

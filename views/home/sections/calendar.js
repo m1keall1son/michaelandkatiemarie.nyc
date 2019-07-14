@@ -31,7 +31,7 @@ $(document).ready(function() {
 	const element = document.querySelector('#stay-duration');
 	if (element) {
 		// bulmaCalendar instance is available as element.bulmaCalendar
-		element.bulmaCalendar.on('select', datepicker => {
+		element.bulmaCalendar.on('select', function(datepicker) {
 			let range = datepicker.data.value().split('-')
 			$("#arrival").val(strip(range[0]))
 			$("#departure").val(strip(range[1]))

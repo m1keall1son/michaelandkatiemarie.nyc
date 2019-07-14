@@ -8,6 +8,8 @@ const app = get_app()
 
 const amazon = require('node-ses')
 
+const browser = require('browser-detect');
+
 const emailClient = amazon.createClient({ key: process.env.EMAIL_KEY, secret: process.env.EMAIL_SECRET });
 
 function loginexc(message, invalidUser, invalidPass){
@@ -232,7 +234,15 @@ module.exports = () => {
 
 	api.router.route('/savethedate')
 		.get((req, res) => {
-			res.render('savethedate/main')
+		 	const result = browser(req.headers['user-agent']);
+			log.channel("Frontend").verbose(JSON.stringify(result))
+			if(result.name == "ie"){
+				log.channel("Frontend").verbose("redirecting ie users to login")
+			    res.redirect("/login")
+			}
+			else{
+				res.render('savethedate/main')
+			}
 		})
 
 	api.router.route('/engagement')

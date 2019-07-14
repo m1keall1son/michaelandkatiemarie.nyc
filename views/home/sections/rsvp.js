@@ -31,7 +31,7 @@ function rsvp(family_id, user_id){
     }
 
  	let req = new XMLHttpRequest()
-    req.addEventListener('load', () => { 
+    req.addEventListener('load', function() { 
         $("#send-rsvp").toggleClass("is-loading")
         console.log(req)
         if(req.status == 200){
@@ -44,7 +44,7 @@ function rsvp(family_id, user_id){
         let dst = $("#rsvp").offset().top
         $("html, body").animate({ scrollTop: dst}, 750)
     })
-    req.addEventListener('error', () => { 
+    req.addEventListener('error', function() { 
     	console.log("ERROR")
         $("#send-rsvp").toggleClass("is-loading")
     })

@@ -1,6 +1,6 @@
 
 function setupCalendars() {
-    $('.stay-duration').each((index, calendar) => {
+    $('.stay-duration').each(function(index, calendar) {
         const family = calendar.dataset.familyid;
         const options = {
             minDate: '10/01/2019',
@@ -28,7 +28,7 @@ function setupCalendars() {
 function setupCardToggles() {
     let cardToggles = document.getElementsByClassName('card-toggle');
     for (let i = 0; i < cardToggles.length; i++) {
-        cardToggles[i].addEventListener('click', e => {
+        cardToggles[i].addEventListener('click', function(e) {
             e.currentTarget.parentElement.childNodes[1].classList.toggle('is-hidden');
             e.currentTarget.childNodes[1].classList.toggle('is-hidden');
             e.currentTarget.childNodes[2].classList.toggle('is-hidden');
@@ -68,18 +68,17 @@ function showFamUpdateBtn(id){
 }
 
 function updateGuestInfo(id) {
-
     const params = { 
         rehearsal: $("input[name='guest-"+id+"-rehearsal']").is(':checked'),
         admin: $("input[name='guest-"+id+"-admin']").is(':checked')
      }
 
     const req = new XMLHttpRequest();
-    req.addEventListener('load', () => { 
+    req.addEventListener('load', function() { 
         $("#guest-"+id+"-update").toggleClass("is-loading")
         $("#guest-"+id+"-update").toggleClass("is-hidden")
     })
-    req.addEventListener('error', () => { 
+    req.addEventListener('error', function() { 
         $("#guest-"+id+"-update").toggleClass("is-danger")
         $("#guest-"+id+"-update").toggleClass("is-loading")
     })
@@ -97,7 +96,7 @@ function updateFamilyInfo(id) {
     }
 
     const req = new XMLHttpRequest();
-    req.addEventListener('load', () => { 
+    req.addEventListener('load', function() { 
         $("#family-"+id+"-update").toggleClass("is-loading")
         $("#family-"+id+"-update").toggleClass("is-hidden")
 
@@ -108,7 +107,7 @@ function updateFamilyInfo(id) {
         }
 
     })
-    req.addEventListener('error', () => { 
+    req.addEventListener('error', function() { 
         $("#family-"+id+"-update").toggleClass("is-danger")
         $("#family-"+id+"-update").toggleClass("is-loading")
     })
@@ -125,11 +124,11 @@ function rsvp(id, response) {
     }
 
     const req = new XMLHttpRequest();
-    req.addEventListener('load', () => { 
+    req.addEventListener('load', function() { 
         $("#rsvp-control-"+id).toggleClass("is-loading")
         $("#response-"+id).html(req.responseText)
     })
-    req.addEventListener('error', () => { 
+    req.addEventListener('error', function() { 
         $("#rsvp-control-"+id).toggleClass("is-loading")
     })
     req.open('POST','/api/rsvp/'+id, true)

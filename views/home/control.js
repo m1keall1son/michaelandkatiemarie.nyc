@@ -21,3 +21,4 @@ $(document).ready(function() {
      	$(".navbar-menu").toggleClass("is-active"); 
     })
 })
+

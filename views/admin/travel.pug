@@ -1,11 +1,11 @@
-div.columns
+div.columns(id="travel-details-"+family.id)
 	div.column
 		div.field
 			div.control
 				input(id="arrival-" + family.id type="hidden" value=family.arrival)
 				input(id="departure-" + family.id type="hidden" value=family.departure)
 				div.label Travel Plans
-				input.input.stay-duration(id="stay-duration-" + family.id data-display-mode="inline" data-familyid=family.id data-color="dark" data-is-range="true" type="date")
+				input.input.stay-duration(id="stay-duration-" + family.id data-display-mode="inline" data-familyid=family.id data-color="dark" data-is-range="true" type="date" readonly)
 	div.column
 		div.contanter
 			div.content

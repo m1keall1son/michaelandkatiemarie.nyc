@@ -27,7 +27,8 @@ module.exports = () => {
 					rsvp_totals: {
 						yes: 0, 
 						no: 0,
-						unresponded: 0
+						unresponded: 0,
+						cancelled: 0
 					}
 				}
 
@@ -36,6 +37,8 @@ module.exports = () => {
 						data.rsvp_totals.yes++
 					} else if(rsvps[i].rsvp == "no") {
 						data.rsvp_totals.no++
+					} else if(rsvps[i].rsvp == "cancelled") {
+						data.rsvp_totals.cancelled++
 					} else {
 						data.rsvp_totals.unresponded++
 					}
@@ -112,60 +115,45 @@ module.exports = () => {
 		})
 
 
-	api.router.route('/family/:family_id/plusone/yes')
-		.post((req,res)=>{
-			return app.allowPlusOne(req.params.family_id)
-			.then(_=> res.send())
-			.catch(error=>res.status(500).send(error))
-		})
-
-	api.router.route('/family/:family_id/plusone/no')
-		.post((req,res)=>{
-			return app.disallowPlusOne(req.params.family_id)
-			.then(_=> res.send())
-			.catch(error=>res.status(500).send(error))
-		})
-
-	api.router.route('/:guest_id/rehearsal/yes')
-		.post((req,res)=>{
-			return app.inviteToRehearsal(req.params.guest_id)
-			.then(_=> res.send())
-			.catch(error=>res.status(500).send(error))
-		})
-
-	api.router.route('/:guest_id/rehearsal/no')
-		.post((req,res)=>{
-			return app.uninviteFromRehearsal(req.params.guest_id)
-			.then(_=> res.send())
-			.catch(error=>res.status(500).send(error))
-		})
-
-	api.router.route('/new')
-		.post((req,res)=>{
-			return app.newGuest(req.body.firstname, req.body.lastname, req.body.email, req.body.family_id, req.body.rehearsal)
-			.then(_=> res.send())
-			.catch(error=>res.status(500).send(error))
-		})
-
-	api.router.route('/family/new')
+	api.router.route('/new/family')
 		.post((req,res)=>{
 			return app.newFamily(req.body.name, false)
 			.then(_=> res.send())
 			.catch(error=>res.status(500).send(error))
 		})
 
-	api.router.route('/guestupdate')
+	api.router.route('/family/:id/new/guest')
+		.post((req,res)=>{
+			return app.newGuest(req.body.firstname, req.body.lastname, req.body.email, req.body.family_id, req.body.rehearsal)
+			.then(_=> res.send())
+			.catch(error=>res.status(500).send(error))
+		})
+
+	api.router.route('/update/guest/:id')
 		.post((req,res) => {
-			log.channel("API").verbose("updating guest: ", req.body.id)
-			if(req.body.rehearsal){
-				if(req.body.rehearsal == 'true'){
-					return app.inviteToRehearsal(req.body.id).then(_=> res.send()).catch(error=>res.status(500).send(error))
-				} else { 
-					return app.uninviteFromRehearsal(req.body.id).then(_=> res.send()).catch(error=>res.status(500).send(error))
-				}
+			log.channel("API").verbose("updating guest: ", req.params.id, " with: ", JSON.stringify(req.body))
+			if(req.body.rehearsal != undefined){
+				return app.database().guests.findOne({where:{id: req.params.id}})
+				.then(guest=>{
+					return guest.update({rehearsal: req.body.rehearsal}).then(_=> res.send()).catch(error=>res.status(500).send(error))
+				}).catch(error=>{
+					log.channel("API").verbose("failed to find guest: ",req.params.id)
+					res.status(500).send(error)
+				})
 			}
 			//default
 			res.send()
+		})
+
+
+	api.router.route('/update/family/:id')
+		.post((req,res) => {
+			log.channel("API").verbose("updating family: ", req.params.id, " with: ", JSON.stringify(req.body))
+			return app.database().Families.findOne({ where : { id: req.params.id } })
+			.then(family => {
+				return family.update({ plusone: req.body.plusone, traveling: req.body.traveling }).then(_=> res.send()).catch(error=>res.status(500).send(error))
+			})
+			.catch(error=>res.status(500).send(error))
 		})
 
 	api.router.route('/rsvp')
@@ -251,6 +239,41 @@ module.exports = () => {
 	        })
 
 		});
+
+		api.router.route('/rsvp/:id')
+		.post((req,res)=>{
+			log.channel("API").verbose("rsvp: ", req.params.id, " response: ", req.body.rsvp)
+			return app.database().guests.findOne({
+				where: {
+					id: req.params.id 
+				}
+	        })
+	        .then(guest => {
+	        	return guest.update({ rsvp: req.body.rsvp })
+	        	.then(_=> { 
+
+	        		const data = {
+	        			record: {
+	        				id: guest.id,
+	        				rsvp: { response: guest.rsvp }
+	        			}
+	        		}
+
+	        		log.channel("API").verbose("rendering rsvp with data: ", JSON.stringify(data))
+
+	        		res.render('admin/rsvp_layout.pug', data)
+
+	        	})
+				.catch(error=>{
+					log.channel("API").error("could not set rsvp: ", error)
+					res.status(500).send(error)
+				})
+	        })
+	        .catch(error=>{
+	        	log.channel("API").error("could not find guest: ", req.params.id , error)
+	        	res.status(500).send(error)
+	        })
+		})
 
 	return api
 }

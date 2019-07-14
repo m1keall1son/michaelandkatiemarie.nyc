@@ -7,54 +7,113 @@ section.hero.is-white
 				p.title.is-4.has-text-danger Regrets: #{rsvp_totals.no}
 			div.column
 				p.title.is-4.has-text-info Unresponded: #{rsvp_totals.unresponded}
+			div.column
+				p.title.is-4.has-text-danger Cancelled: #{rsvp_totals.cancelled}
 br
 h1.title.is-family-secondary.has-text-centered Guest Info
 each family in families
-	div.box
-		div.title.is-4.is-family-secondary #{family.name}
+	div.card.is-fullwidth
+		div.card-header.card-toggle(style="cursor:pointer;")
+			p.card-header-title.is-4.is-family-secondary #{family.name}
+			a.card-header-icon
+				i.fa.fa-angle-down
+			a.card-header-icon.is-hidden
+				i.fa.fa-angle-up
+		div.card-content.is-hidden
+			div.box
+				div.level
+					div.level-item
+						div.label Family Options:
+					div.level-item
+						div.field
+							div.control
+								label.checkbox
+									if family.traveling
+										input(name="family-"+family.id+"-traveling"
+										type="checkbox"
+										onchange="showFamUpdateBtn("+family.id+")"
+										checked)
+									else
+										input(name="family-"+family.id+"-traveling"
+										type="checkbox"
+										onchange="showFamUpdateBtn("+family.id+")")
+									span  Is traveling to NYC
+					div.level-item
+						div.field
+							div.control
+								label.checkbox
+									if family.plusone
+										input(name="family-"+family.id+"-plusone"
+										type="checkbox"
+										onchange="showFamUpdateBtn("+family.id+")"
+										checked)
+									else
+										input(name="family-"+family.id+"-plusone"
+										type="checkbox"
+										onchange="showFamUpdateBtn("+family.id+")")
+									span  Allow plus one
+					div.level-item
+						div.field
+							button.button.is-light.is-small.is-hidden.updatebtn(
+								id="family-"+family.id+"-update"
+								onclick="updateFamilyInfo(" + family.id + ")") Update
 
-		if family.traveling
-			include travel.pug
+			div.content
+				if family.traveling
+					include travel.pug
 
-		each record in family.guests
-			div.card
-				div.card-content
-					div.media
-						div.media-content
-							div.title.is-4.is-family-secondary #{record.firstname} #{record.lastname}
-							p.subtitle.is-6 #{record.email}
-						div.media-right
-							div.tags
-								if record.user_id != null
-									span.tag.is-dark Registered
-								else
-									span.tag.is-danger Not Registered
-								if record.admin
-									span.tag.is-primary Admin
-					div.columns
-						div.column.is-one-quarter
-							div.box
-								div.label Guest Options
-								div.container
-									div.field
-										div.control
-											label.checkbox
-												if record.rehearsal
-													input(name="guest-"+record.id+"-rehearsal"
-													type="checkbox"
-													checked)
-												else
-													input(name="guest-"+record.id+"-rehearsal"
-													type="checkbox")
-												span  Rehearsal Dinner 
-									div.field
-											button.button.is-light.is-small(
-											id="guest-"+record.id+"-update"
-											onclick="updateGuestInfo(" + record.id + ")") Update
-						div.column
-							include rsvp_layout.pug
-								
-			br
+				each record in family.guests
+					div.card
+						div.card-content
+							div.media
+								div.media-content
+									div.title.is-4.is-family-secondary #{record.firstname} #{record.lastname}
+									p.subtitle.is-6 #{record.email}
+								div.media-right
+									div.tags
+										if record.user_id != null
+											span.tag.is-dark Registered
+										else
+											span.tag.is-danger Not Registered
+							div.columns
+								div.column.is-one-quarter
+									div.box
+										div.label Guest Options
+										div.container
+											div.field
+												div.control
+													label.checkbox
+														if record.rehearsal
+															input(name="guest-"+record.id+"-rehearsal"
+															type="checkbox"
+															onchange="showUpdateBtn("+record.id+")"
+															checked)
+														else
+															input(name="guest-"+record.id+"-rehearsal"
+															type="checkbox"
+															onchange="showUpdateBtn("+record.id+")")
+														span  Rehearsal dinner
+											div.field
+												div.control
+													label.checkbox
+														if record.admin
+															input(name="guest-"+record.id+"-admin"
+															type="checkbox"
+															onchange="showUpdateBtn("+record.id+")"
+															checked)
+														else
+															input(name="guest-"+record.id+"-admin"
+															type="checkbox"
+															onchange="showUpdateBtn("+record.id+")")
+														span  Is Admin
+											div.field
+												button.button.is-light.is-small.is-hidden.updatebtn(
+													id="guest-"+record.id+"-update"
+													onclick="updateGuestInfo(" + record.id + ")") Update
+								div.column(id="response-"+record.id)
+									include rsvp_layout.pug
+										
+	br
 else
 	div.notification.is-danger 
 		p Something went wrong

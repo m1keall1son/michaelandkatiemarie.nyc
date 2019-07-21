@@ -1,38 +1,70 @@
-if user.family.plusone && user.guest == null
-	br
-	div.columns(id="plusone-question")
+mixin invited(id)
+	input(id="plusone-rsvp" type="hidden" data-guestid=id data-create="true" value="")
+	div.columns.has-text-centered
+		div.column(id="plusone-name-container")
+			div.field
+				div.control
+					input.input.is-family-vtks.is-bold(id="plusone-firstname" type="text" placeholder="First" onchange="showSendButton()")
 		div.column
-			label.label.is-family-vtks Will you be bringing a guest?
+			div.field
+				div.control
+					input.input.is-family-vtks.is-bold(id="plusone-lastname" type="text" placeholder="Last" onchange="showSendButton()")
 		div.column
-			button.button.is-dark.is-outlined.is-family-vtks(id="plusone-yes" onclick="plusone("+user.family.id +", 'yes', "+user.rehearsal+", true)") Yes
+			button.button.is-outlined.is-dark.is-small.is-family-vtks(id="plusone-rsvp-yes" onclick="plusoneYes()") Accepts With Pleasure
 		div.column
-			button.button.is-dark.is-outlined.is-family-vtks(id="plusone-no" onclick="plusone("+user.family.id +", 'no', "+user.rehearsal+", true)") No
-else if user.family.plusone && user.guest.rsvp != "no" 
+			button.button.is-outlined.is-dark.is-small.is-family-vtks(id="plusone-rsvp-no" onclick="plusoneNo()") Regretfully Declines
+
+mixin coming(id, firstname, lastname)
+	input(id="plusone-rsvp" type="hidden" data-guestid=id data-create="false" value="yes")
+	div.columns.has-text-centered
+		div.column(id="plusone-name-container")
+			div.field
+				div.control
+					input.input.is-family-vtks.is-bold(id="plusone-firstname" type="text" placeholder="First" onchange="showSendButton()" value=firstname)
+		div.column
+			div.field
+				div.control
+					input.input.is-family-vtks.is-bold(id="plusone-lastname" type="text" placeholder="Last" onchange="showSendButton()" value=lastname)
+		div.column
+			button.button.is-success.is-small.is-family-vtks(id="plusone-rsvp-yes" disabled onclick="plusoneYes()") Accepted With Pleasure
+		div.column
+			button.button.is-outlined.is-dark.is-small.is-family-vtks(id="plusone-rsvp-no" onclick="plusoneNo()") Regretfully Declines
+
+mixin notcoming(id, firstname, lastname)
+	input(id="plusone-rsvp" type="hidden" data-guestid=id data-create="false" value="no")
+	div.columns.has-text-centered
+		div.column(id="plusone-name-container")
+			div.field
+				div.control
+					input.input.is-family-vtks.is-bold(id="plusone-firstname" type="text" placeholder="First" onchange="showSendButton()" value=firstname)
+		div.column
+			div.field
+				div.control
+					input.input.is-family-vtks.is-bold(id="plusone-lastname" type="text" placeholder="Last" onchange="showSendButton()" value=lastname)
+		div.column
+			button.button.is-outlined.is-dark.is-small.is-family-vtks(id="plusone-rsvp-yes" onclick="plusoneYes()") Accepts With Pleasure
+		div.column
+			button.button.is-danger.is-small.is-family-vtks(id="plusone-rsvp-no" disabled onclick="plusoneNo()") Regretfully Declined
+if user.family.plusone
 	br
 	div.is-divider.is-family-vtks.has-text-dark(id="plusone-divider" data-content="Guest")
 	br
-	div.field.is-horizontal(id="plusone-info")
-		div.field-label
-			div.label.is-family-vtks Name
-		div.field-body
-			div.field.is-grouped
-				div.control
-					input.input(id="plusone-firstname" type="text" placeholder="First" onchange="showSendButton()" value=user.guest.firstname)
-				div.control
-					input.input(id="plusone-lastname" type="text" placeholder="Last" onchange="showSendButton()" value=user.guest.lastname)
-	div.field.is-horizontal(id="plusone-allergies-field")
-		div.field-label.label.is-family-vtks.help Food Allergies
-		div.field-body
-			div.field
-				div.control
-					input.input.is-small.allergies(id="plusone-allergies" type="text" placeholder="Allergies or dietary restrictions." value=user.guest.allergies onchange="showSendButton()")
+	if user.guest == null
+		+invited(user.family.id)
+		div.field.is-horizontal(id="plusone-allergies-field")
+			div.field-label.label.is-family-vtks.help Food Allergies
+			div.field-body
+				div.field
+					div.control
+						input.input.is-small.allergies(id="plusone-allergies" type="text" placeholder="Allergies or dietary restrictions." onchange="showSendButton()")
+	else if user.guest.rsvp == "no"
+		+notcoming(user.guest.id, user.guest.firstname, user.guest.lastname)
+	else
+		+coming(user.guest.id, user.guest.firstname, user.guest.lastname)
+		div.field.is-horizontal(id="plusone-allergies-field")
+			div.field-label.label.is-family-vtks.help Food Allergies
+			div.field-body
+				div.field
+					div.control
+						input.input.is-small.allergies(id="plusone-allergies" type="text" placeholder="Allergies or dietary restrictions." value=user.guest.allergies onchange="showSendButton()")
 	br
-else if user.family.plusone && user.guest.rsvp == "no"
-	br
-	div.columns(id="plusone-question")
-		div.column
-			label.label.is-family-vtks Will you be bringing a guest?
-		div.column
-			button.button.is-dark.is-outlined.is-family-vtks(id="plusone-yes" onclick="plusone("+user.family.id +", 'yes', "+user.rehearsal+", false)") Yes
-		div.column
-			button.button.is-dark.is-family-vtks(id="plusone-no" disabled) No

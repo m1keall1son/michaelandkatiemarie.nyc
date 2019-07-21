@@ -1,5 +1,5 @@
 
-function rsvp(family_id, user_id, traveling){
+function rsvp(family_id, user_id, traveling, plusone){
 
 	let params = {
     	family: family_id,
@@ -31,24 +31,32 @@ function rsvp(family_id, user_id, traveling){
 
     if(traveling){
 
-    	if($("#arrival").val() == "" && !$("#arrival").hasClass("is-danger")){
-    		$("#arrival").addClass("is-danger")
-    		$('#arrival-container').append('<div class="help is-danger has-text-left">Please enter the date your party arrives in NYC.</div>')
+    	if($("#arrival").val() == ""){
+    		if(!$("#arrival").hasClass("is-danger")){
+    			$("#arrival").addClass("is-danger")
+    			$('#arrival-container').append('<div class="help is-danger has-text-left">Please enter the date your party arrives in NYC.</div>')
+    		}
     		cont = false
     	}
-    	if($("#accomodations-name").val() == "" && !$("#accomodations-name").hasClass("is-danger")){
-    		$("#accomodations-name").addClass("is-danger")
-    		$('#accomodations-name-container').append('<div class="help is-danger has-text-left">Please enter where your party is staying.</div>')
+    	if($("#accomodations-name").val() == ""){
+    		if(!$("#accomodations-name").hasClass("is-danger")){
+    			$("#accomodations-name").addClass("is-danger")
+    			$('#accomodations-name-container').append('<div class="help is-danger has-text-left">Please enter where your party is staying.</div>')
+    		}
     		cont = false
     	}
-    	if($("#accomodations-add1").val() == "" && !$("#accomodations-add1").hasClass("is-danger")){
-    		$("#accomodations-add1").addClass("is-danger")
-    		$('#accomodations-add1-container').append('<div class="help is-danger has-text-left">Please enter the address of your accomodations.</div>')
+    	if($("#accomodations-add1").val() == ""){
+    		if(!$("#accomodations-add1").hasClass("is-danger")){
+    			$("#accomodations-add1").addClass("is-danger")
+    			$('#accomodations-add1-container').append('<div class="help is-danger has-text-left">Please enter the address of your accomodations.</div>')
+    		}
     		cont = false
     	}
-    	if($("#accomodations-zip").val() == "" && !$("#accomodations-zip").hasClass("is-danger")){
-    		$("#accomodations-zip").addClass("is-danger")
-    		$('#accomodations-zip-container').append('<div class="help is-danger has-text-left">Please enter the zip code of your accomodations.</div>')
+    	if($("#accomodations-zip").val() == ""){
+    		if(!$("#accomodations-zip").hasClass("is-danger")){
+	    		$("#accomodations-zip").addClass("is-danger")
+	    		$('#accomodations-zip-container').append('<div class="help is-danger has-text-left">Please enter the zip code of your accomodations.</div>')
+    		}
     		cont = false
     	}
 
@@ -61,6 +69,51 @@ function rsvp(family_id, user_id, traveling){
 	    		zip: $("#accomodations-zip").val()
 	    	}
 	    }
+    }
+
+    if(plusone){
+
+    	if($("#plusone-rsvp").val() == ""){
+    		cont = false
+    		$("#required-plusone").toggleClass("is-hidden")
+    	}else if($("#plusone-rsvp").val() == "yes"){
+    		let namemessage = false;
+    		if($("#plusone-firstname").val() == ""){
+    			cont = false
+    			if(!$("#plusone-firstname").hasClass("is-danger")){
+    				$("#plusone-firstname").addClass("is-danger")
+    				namemessage = true;
+    			}	
+	    	}else {
+	    		if($("#plusone-firstname").hasClass("is-danger")){
+    				$("#plusone-firstname").removeClass("is-danger")
+    			}	
+	    	}
+	    	if($("#plusone-lastname").val() == ""){
+    			cont = false
+    			if(!$("#plusone-lastname").hasClass("is-danger")){
+					$("#plusone-lastname").addClass("is-danger")
+	    			namemessage = true;
+    			}
+	    	}else {
+	    		if($("#plusone-lastname").hasClass("is-danger")){
+    				$("#plusone-lastname").removeClass("is-danger")
+    			}	
+	    	}
+	    	if(namemessage && !$('#plusone-name-container').hasClass("has-warning-message")){
+	    		$('#plusone-name-container').addClass("has-warning-message")
+	    		$('#plusone-name-container').append('<div class="help is-danger has-text-left">Please enter your guest\'s name.</div>')
+	    	}
+    	}
+
+    	if(cont){
+	    	params.guest = {
+	    		firstname: $("#plusone-firstname").val(),
+	    		lastname: $("#plusone-lastname").val(),
+	    		allergies: $("#plusone-allergies").val(),
+	    		rsvp: $("#plusone-rsvp").val()
+	    	}
+    	}
     }
 
     if(!cont) return
@@ -185,45 +238,45 @@ function rsvpNo(id) {
 	showSendButton()
 }
 
-function addGuest(id) {
+function plusoneYes(){
 
+    $("#plusone-rsvp").val("yes")
+
+    if($("#plusone-rsvp-yes").hasClass("is-outlined")){
+    	$("#plusone-rsvp-yes").removeClass("is-outlined")
+    	$("#plusone-rsvp-yes").removeClass("is-dark")
+    	$("#plusone-rsvp-yes").addClass("is-success")
+    }
+
+    if(!$("#plusone-rsvp-no").hasClass("is-outlined")){
+    	$("#plusone-rsvp-no").addClass("is-outlined")
+    	$("#plusone-rsvp-no").addClass("is-dark")
+    	$("#plusone-rsvp-no").removeClass("is-danger")
+    }
+
+    $("#plusone-rsvp-yes").attr("disabled", true);
+    $("#plusone-rsvp-no").attr("disabled", false);
+
+	showSendButton()
 }
 
-function plusone(id, response, rehearsal, plusone_id){
+function plusoneNo(){
+    $("#plusone-rsvp").val("no")
 
-	let url = "/api/update/family/"+ id +"/plusone/"
+    if(!$("#plusone-rsvp-yes").hasClass("is-outlined")){
+    	$("#plusone-rsvp-yes").addClass("is-outlined")
+    	$("#plusone-rsvp-yes").addClass("is-dark")
+    	$("#plusone-rsvp-yes").removeClass("is-success")
+    }
 
-	if(plusone_id == null){
-		url = "/api/new/family/"+ id +"/plusone/"
-	}
+    if($("#plusone-rsvp-no").hasClass("is-outlined")){
+    	$("#plusone-rsvp-no").removeClass("is-outlined")
+    	$("#plusone-rsvp-no").removeClass("is-dark")
+    	$("#plusone-rsvp-no").addClass("is-danger")
+    }
 
-	let params = {
-		plusone_id: plusone_id,
-		firstname:
-		lastname:
-		rsvp: response,
-		rehearsal: rehearsal
-	}
+   	$("#plusone-rsvp-yes").attr("disabled", false);
+    $("#plusone-rsvp-no").attr("disabled", true);
 
-	let req = new XMLHttpRequest()
-    req.addEventListener('load', function() { 
-        $("#plusone-yes").toggleClass("is-loading")
-        if(req.status == 200){
-        	$("#plusone-content").html(req.responseText)
-        }
-        else{
-        	console.log(req)
-        	$("#plusone-content").html("<div class='title is-family-vtks'>Uh oh! Something went wrong! reload the page and try again.</div>")
-        }
-    })
-    req.addEventListener('error', function() { 
-    	console.log("ERROR")
-    	$("#plusone-yes").toggleClass("is-loading")
-    })
-
-    req.open('POST', url, true)
-  	req.setRequestHeader( "Content-Type", "application/json" )
-    req.send(JSON.stringify(params))
-
-    $("#plusone-yes").toggleClass("is-loading")
+	showSendButton()
 }

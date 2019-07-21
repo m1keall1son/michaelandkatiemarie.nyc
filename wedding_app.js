@@ -146,7 +146,7 @@ class WeddingApp extends UTILS.App {
 	            	rehearsal: rehearsal
 	        	}
 	        })
-	        .then(([guest, created]) => resolve(family))
+	        .then(([guest, created]) => resolve(guest))
 	        .catch(error => reject(error))
 	    })
 	}

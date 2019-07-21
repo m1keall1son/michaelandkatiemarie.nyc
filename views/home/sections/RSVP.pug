@@ -126,14 +126,12 @@ section.section(id="rsvp")
 												div.control
 													input.input(id="accomodations-zip" type="number" placeholder="11211" data-familyid=user.family.id onchange="showSendButton()" value=user.family.zip)
 									div.help.has-text-danger.is-family-vtks.has-text-left (*Required)
-									div.is-divider.is-family-vtks.has-text-dark
 
-								br
 								div.field
 									div.control.has-text-centered
-										button.button.is-half-width.is-large.is-family-natyl.is-dark.is-hidden(id="send-rsvp" onclick="rsvp(" + user.family.id + ", " + user.id + ", "+ user.family.traveling+")") Send
+										button.button.is-half-width.is-large.is-family-natyl.is-dark.is-hidden(id="send-rsvp" onclick="rsvp(" + user.family.id + ", " + user.id + ", "+ user.family.traveling+", "+ user.family.plusone +")") Send
 										div.help.is-danger.is-hidden(id="required") *Please rsvp for all your guests.
-
+										div.help.is-danger.is-hidden(id="required-plusone") *Please choose an rsvp response for your guest.
 
 								div.has-text-centered.is-family-vtks Kindly respond by the Sixteenth of August
 

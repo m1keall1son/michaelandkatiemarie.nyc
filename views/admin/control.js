@@ -48,9 +48,13 @@ function setupCardToggles() {
 }
 
 function guestListener () {
-    $('#guests').append(this.responseText)
-    setupCalendars()
-    setupCardToggles()
+    if(this.status == 200){
+        $('#guests').append(this.responseText)
+        setupCalendars()
+        setupCardToggles()
+    }else{
+        console.log(this)
+    }
 }
 
 function refreshGuestInfo() {

@@ -113,7 +113,81 @@ each family in families
 													onclick="updateGuestInfo(" + record.id + ")") Update
 								div.column(id="response-"+record.id)
 									include rsvp_layout.pug
+				if family.plusone_guest != null
+					div.card
+						div.card-content
+							div.media
+								div.media-content
+									div.title.is-4.is-family-secondary #{family.plusone_guest.firstname} #{family.plusone_guest.lastname}
+									p.subtitle.is-6 N/A
+								div.media-right
+									div.tags
+										span.tag.is-info Is Plus One
 										
+							div.columns
+								div.column.is-one-quarter
+									div.box
+										div.label Guest Options
+										div.container
+											div.field
+												div.control
+													label.checkbox
+														if family.plusone_guest.rehearsal
+															input(name="guest-"+family.plusone_guest.id+"-rehearsal"
+															type="checkbox"
+															onchange="showUpdateBtn("+family.plusone_guest.id+")"
+															checked)
+														else
+															input(name="guest-"+family.plusone_guest.id+"-rehearsal"
+															type="checkbox"
+															onchange="showUpdateBtn("+family.plusone_guest.id+")")
+														span  Rehearsal dinner
+										
+											div.field
+												button.button.is-light.is-small.is-hidden.updatebtn(
+													id="guest-"+family.plusone_guest.id+"-update"
+													onclick="updateGuestInfo(" + family.plusone_guest.id + ")") Update
+								div.column(id="response-"+family.plusone_guest.id)
+									if family.plusone_guest.rsvp != undefined
+										if family.plusone_guest.rsvp.response == "yes"
+											div.notification.is-primary
+												div.label.is-family-secondary RSVP
+												div.content
+													p I am coming
+													p Food allergies: #{family.plusone_guest.allergies}
+											button.button.is-outlined.is-danger(id="#rsvp-control-" + family.plusone_guest.id onclick="rsvp("+family.plusone_guest.id+", 'cancelled')") Cancel RSVP
+										else if family.plusone_guest.rsvp.response == "no"
+											div.notification.is-danger
+												div.label.is-family-secondary RSVP
+												div.content
+													p I send my regrets
+											button.button.is-outlined.is-primary(id="#rsvp-control-" + family.plusone_guest.id onclick="rsvp("+family.plusone_guest.id+", 'yes')") RSVP yes
+										else if family.plusone_guest.rsvp.response == "cancelled"
+											div.notification.is-danger
+												div.label.is-family-secondary RSVP
+												div.content
+													p My RSVP was cancelled by an admin
+											button.button.is-outlined.is-primary(id="#rsvp-control-" + family.plusone_guest.id onclick="rsvp("+family.plusone_guest.id+", 'yes')") RSVP yes
+										else if family.plusone_guest.rsvp.response == ""
+											div.box
+												div.label.is-family-secondary RSVP
+												div.content
+													p Hasn't responded yet
+											div.columns
+												div.column
+													button.button.is-outlined.is-dark(id="#rsvp-control-" + family.plusone_guest.id onclick="rsvp("+family.plusone_guest.id+", 'yes')") RSVP yes
+												div.column
+													button.button.is-outlined.is-dark(id="#rsvp-control-" + family.plusone_guest.id onclick="rsvp("+family.plusone_guest.id+", 'no')") RSVP no
+									else
+										div.box
+											div.label RSVP
+											div.content
+												p Hasn't responded yet
+										div.columns
+											div.column
+												button.button.is-outlined.is-dark(id="#rsvp-control-" + family.plusone_guest.id onclick="rsvp("+family.plusone_guest.id+", 'yes')") RSVP yes
+											div.column
+												button.button.is-outlined.is-dark(id="#rsvp-control-" + family.plusone_guest.id onclick="rsvp("+family.plusone_guest.id+", 'no')") RSVP no	
 	br
 else
 	div.notification.is-danger 

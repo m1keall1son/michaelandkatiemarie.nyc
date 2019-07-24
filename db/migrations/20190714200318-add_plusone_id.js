@@ -4,7 +4,7 @@ module.exports = {
   up: (queryInterface, Sequelize) => {
     return queryInterface.addColumn(
       'Families',
-      'plusone',
+      'plusone_id',
       {
         type: Sequelize.BOOLEAN
       }
@@ -14,7 +14,7 @@ module.exports = {
   down: (queryInterface, Sequelize) => {
     return queryInterface.removeColumn(
       'Families',
-      'plusone'
+      'plusone_id'
     )
   }
 };

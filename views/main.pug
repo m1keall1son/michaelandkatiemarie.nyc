@@ -14,6 +14,10 @@ html(lang="en")
             include home/content.pug
         else if main.page == constants.Page.IDOCREW
             include idocrew/content.pug
+        else if main.page == constants.Page.FAQ
+            include faq/content.pug
+        else if main.page == constants.Page.SCHEDULE
+            include schedule/content.pug
         else if main.page == constants.Page.LOGIN
             include login/main.pug
         else if main.page == constants.Page.ADMIN && user.admin

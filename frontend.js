@@ -32,6 +32,8 @@ var SequelizeStore = require('connect-session-sequelize')(session.Store);
 var Page = {
 	HOME:"Michael & KatieMarie",
 	IDOCREW:"Meet the I-Do-Crew",
+	FAQ:"Frequently Asked Qeustions",
+	SCHEDULE:"Schedule",
 	RSVP:"RSVP",
 	ADMIN:"Admin",
 	LOGIN:"Login",
@@ -480,11 +482,33 @@ module.exports = () => {
 		    }
 		});
 
+	api.router.route('/schedule')
+		.get((req, res) => {
+			if (req.session.user && req.cookies.user_sid) {
+		    	//authenticated, get their info
+		    	return renderPage(req, res, Page.SCHEDULE, req.session.user.id)
+		    } else {
+		    	//not authenticated, redirect
+		        res.redirect('/login')
+		    }
+		})
+
 	api.router.route('/idocrew')
 		.get((req, res) => {
 			if (req.session.user && req.cookies.user_sid) {
 		    	//authenticated, get their info
 		    	return renderPage(req, res, Page.IDOCREW, req.session.user.id)
+		    } else {
+		    	//not authenticated, redirect
+		        res.redirect('/login')
+		    }
+		})
+
+	api.router.route('/faq')
+		.get((req, res) => {
+			if (req.session.user && req.cookies.user_sid) {
+		    	//authenticated, get their info
+		    	return renderPage(req, res, Page.FAQ, req.session.user.id)
 		    } else {
 		    	//not authenticated, redirect
 		        res.redirect('/login')

@@ -1,4 +1,4 @@
-mixin invited(id)
+mixin guest_invited(id)
 	input(id="plusone-rsvp" type="hidden" data-guestid=id data-create="true" value="")
 	div.columns.has-text-centered
 		div.column(id="plusone-name-container")
@@ -14,7 +14,7 @@ mixin invited(id)
 		div.column
 			button.button.is-outlined.is-dark.is-small.is-family-vtks(id="plusone-rsvp-no" onclick="plusoneNo()") Regretfully Declines
 
-mixin coming(id, firstname, lastname)
+mixin guest_coming(id, firstname, lastname)
 	input(id="plusone-rsvp" type="hidden" data-guestid=id data-create="false" value="yes")
 	div.columns.has-text-centered
 		div.column(id="plusone-name-container")
@@ -30,7 +30,7 @@ mixin coming(id, firstname, lastname)
 		div.column
 			button.button.is-outlined.is-dark.is-small.is-family-vtks(id="plusone-rsvp-no" onclick="plusoneNo()") Regretfully Declines
 
-mixin notcoming(id, firstname, lastname)
+mixin guest_notcoming(id, firstname, lastname)
 	input(id="plusone-rsvp" type="hidden" data-guestid=id data-create="false" value="no")
 	div.columns.has-text-centered
 		div.column(id="plusone-name-container")
@@ -50,7 +50,7 @@ if user.family.plusone
 	div.is-divider.is-family-vtks.has-text-dark(id="plusone-divider" data-content="Guest")
 	br
 	if user.guest == null
-		+invited(user.family.id)
+		+guest_invited(user.family.id)
 		div.field.is-horizontal(id="plusone-allergies-field")
 			div.field-label.label.is-family-vtks.help Food Allergies
 			div.field-body
@@ -58,9 +58,9 @@ if user.family.plusone
 					div.control
 						input.input.is-small.allergies(id="plusone-allergies" type="text" placeholder="Allergies or dietary restrictions." onchange="showSendButton()")
 	else if user.guest.rsvp == "no"
-		+notcoming(user.guest.id, user.guest.firstname, user.guest.lastname)
+		+guest_notcoming(user.guest.id, user.guest.firstname, user.guest.lastname)
 	else
-		+coming(user.guest.id, user.guest.firstname, user.guest.lastname)
+		+guest_coming(user.guest.id, user.guest.firstname, user.guest.lastname)
 		div.field.is-horizontal(id="plusone-allergies-field")
 			div.field-label.label.is-family-vtks.help Food Allergies
 			div.field-body

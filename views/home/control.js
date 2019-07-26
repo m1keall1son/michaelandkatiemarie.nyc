@@ -1,10 +1,10 @@
 
 $(document).ready(function() {
 
-    // setTimeout(function(){
-    //     let dst = $("#rsvp").offset().top
-    //     $("html, body").animate({ scrollTop: dst}, 750)
-    // }, 1000)
+    setTimeout(function(){
+        let dst = $("#rsvp").offset().top
+        $("html, body").animate({ scrollTop: dst}, 750)
+    }, 1000)
 
     $("a.navbar-item").click(function(){
         let dataid = $(this).attr("data-id")

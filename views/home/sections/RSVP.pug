@@ -86,14 +86,6 @@ section.section(id="rsvp")
 									div.is-divider.is-family-vtks.has-text-dark(data-content="Travel Info")
 									div.field.is-horizontal
 										div.field-label.has-text-left
-											div.label.is-family-vtks Accomodations
-												span.has-text-danger *
-										div.field-body
-											div.field(id="accomodations-name-container")
-												div.control
-													input.input(id="accomodations-name" type="text" placeholder="The Hoxton, AirBnb, etc." data-familyid=user.family.id onchange="showSendButton()" value=user.family.accomodations)
-									div.field.is-horizontal
-										div.field-label.has-text-left
 											div.label.is-family-vtks Arrival Date
 												span.has-text-danger *
 										div.field-body
@@ -105,27 +97,33 @@ section.section(id="rsvp")
 													input.input(id="stay-duration" data-familyid=user.family.id data-color="dark" type="date" onchange="showSendButton()")
 									div.field.is-horizontal
 										div.field-label.has-text-left
-											div.label.is-family-vtks Address
+											div.label.is-family-vtks Accomodations
 												span.has-text-danger *
+										div.field-body
+											div.field(id="accomodations-name-container")
+												div.control
+													input.input(id="accomodations-name" type="text" placeholder="The Hoxton, Hotel, AirBnb, etc." data-familyid=user.family.id onchange="showSendButton()" value=user.family.accomodations)
+									div.field.is-horizontal
+										div.field-label.has-text-left
+											div.label.is-family-vtks
 										div.field-body
 											div.field(id="accomodations-add1-container")
 												div.control
-													input.input(id="accomodations-add1" type="text" placeholder="123 Main st." data-familyid=user.family.id onchange="showSendButton()" value=user.family.address)
+													input.input(id="accomodations-add1" type="text" placeholder="Accomodations Address" data-familyid=user.family.id onchange="showSendButton()" value=user.family.address)
 									div.field.is-horizontal
 										div.field-label.has-text-left
 											div.label.is-family-vtks 
 										div.field-body
 											div.field
 												div.control
-													input.input(id="accomodations-add2" type="text" placeholder="Suite/Apt/Room #" data-familyid=user.family.id onchange="showSendButton()" value=user.family.address2)
+													input.input(id="accomodations-add2" type="text" placeholder="Suite/Apt/Room # (if available)" data-familyid=user.family.id onchange="showSendButton()" value=user.family.address2)
 									div.field.is-horizontal
 										div.field-label.has-text-left
-											div.label.is-family-vtks Zip Code
-												span.has-text-danger *
+											div.label.is-family-vtks
 										div.field-body
 											div.field(id="accomodations-zip-container")
 												div.control
-													input.input(id="accomodations-zip" type="number" placeholder="11211" data-familyid=user.family.id onchange="showSendButton()" value=user.family.zip)
+													input.input(id="accomodations-zip" type="number" placeholder="Zip Code" data-familyid=user.family.id onchange="showSendButton()" value=user.family.zip)
 									div.help.has-text-danger.is-family-vtks.has-text-left (*Required)
 
 								div.field

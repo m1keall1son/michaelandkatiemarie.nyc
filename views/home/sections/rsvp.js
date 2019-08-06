@@ -31,13 +31,13 @@ function rsvp(family_id, user_id, traveling, plusone){
 
     if(traveling){
 
-    	if($("#arrival").val() == ""){
-    		if(!$("#arrival").hasClass("is-danger")){
-    			$("#arrival").addClass("is-danger")
-    			$('#arrival-container').append('<div class="help is-danger has-text-left">Please enter the date your party arrives in NYC.</div>')
-    		}
-    		cont = false
-    	}
+    	// if($("#arrival").val() == ""){
+    	// 	if(!$("#arrival").hasClass("is-danger")){
+    	// 		$("#arrival").addClass("is-danger")
+    	// 		$('#arrival-container').append('<div class="help is-danger has-text-left">Please enter the date your party arrives in NYC.</div>')
+    	// 	}
+    	// 	cont = false
+    	// }
     	if($("#accomodations-name").val() == ""){
     		if(!$("#accomodations-name").hasClass("is-danger")){
     			$("#accomodations-name").addClass("is-danger")

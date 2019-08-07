@@ -65,7 +65,8 @@ module.exports = () => {
 						zip: families[i].zip,
 						plusone_id: families[i].plusone_id,
 						guests: [],
-						plusone_guest: null
+						plusone_guest: null,
+						has_rsvp: null
 					}
 
 					for(let j = 0; j < guests.length; ++j){
@@ -74,6 +75,22 @@ module.exports = () => {
 							continue
 
 						log.channel("API").verbose("adding memeber: ", j)
+
+						if(guests[j].rsvp && guests[j].rsvp != "" && f.has_rsvp != "mixed"){
+							if(guests[j].rsvp == "yes"){
+								if(f.has_rsvp == "no"){
+									f.has_rsvp = "mixed"
+								}else{
+									f.has_rsvp = "yes"
+								}
+							}else if(guests[j].rsvp == "no" || guests[j].rsvp == "cancelled"){
+								if(f.has_rsvp == "yes"){
+									f.has_rsvp = "mixed"
+								}else{
+									f.has_rsvp = "no"
+								}
+							}
+						}
 
 						let g = {
 							id: guests[j].id,

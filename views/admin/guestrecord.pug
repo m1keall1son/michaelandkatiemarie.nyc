@@ -14,7 +14,15 @@ h1.title.is-family-secondary.has-text-centered Guest Info
 each family in families
 	div.card.is-fullwidth
 		div.card-header.card-toggle(style="cursor:pointer;")
-			p.card-header-title.is-4.is-family-secondary #{family.name}
+			if family.has_rsvp
+				if family.has_rsvp == "yes"
+					p.card-header-title.is-4.is-family-secondary.has-background-primary #{family.name}
+				else if family.has_rsvp == "no"
+					p.card-header-title.is-4.is-family-secondary.has-background-danger #{family.name}
+				else 
+					p.card-header-title.is-4.is-family-secondary.has-background-info #{family.name}
+			else
+				p.card-header-title.is-4.is-family-secondary #{family.name}
 			a.card-header-icon
 				i.fa.fa-angle-down
 			a.card-header-icon.is-hidden

@@ -3,4 +3,6 @@ node_modules/
 .env
 db/sessions.db
 db/sessions.dev.db
-public/photobooth
+
+public/photobooth/sessions
+

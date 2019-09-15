@@ -37,6 +37,7 @@ class WeddingApp extends UTILS.App {
 			//then connect server
 			this._server.addApi(require('./frontend')())
 			this._server.addApi(require('./guest_api')())
+			this._server.addApi(require('./photobooth')())
 			this._server.open(this.port)
 
 			return Promise.all([this.guestList(),this.userList()])

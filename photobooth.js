@@ -64,15 +64,17 @@ module.exports = () => {
 	api.router.route('/session/:sessionId')
 		.get((req, res) => {
 		 	const result = browser(req.headers['user-agent']);
-			log.channel("Frontend").verbose(JSON.stringify(result))
+			log.channel("Photobooth").verbose(JSON.stringify(result))
 			if(result.name == "ie"){
-				log.channel("Frontend").verbose("redirecting ie users to login")
+				log.channel("Photobooth").verbose("redirecting ie users to login")
 			    res.redirect("/login")
 			    //todo make this render an error page
 			}
 			else{
+				var config = JSON.parse(fs.readFileSync(__dirname + `/public/photobooth/sessions/${req.params.sessionId}/config.json`))
+				log.channel("Photobooth").verbose(JSON.stringify(config))
 				log.channel("Photobooth").verbose("serving session: ", req.params.sessionId)
-				res.render('photobooth/main', { sessionId: req.params.sessionId })
+				res.render('photobooth/main', { sessionId: req.params.sessionId, config: config })
 			}
 		})
 

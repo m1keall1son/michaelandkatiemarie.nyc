@@ -2,7 +2,7 @@
 $(document).ready(function() {
 
     setTimeout(function(){
-        let dst = $("#rsvp").offset().top
+        let dst = $("#mainevents").offset().top
         $("html, body").animate({ scrollTop: dst}, 750)
     }, 1000)
 

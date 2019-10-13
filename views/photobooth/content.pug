@@ -1,10 +1,16 @@
-
+div#username.is-hidden #{config.name}
 section.hero.is-fullheight(id="load-section")
 	div.hero-body
 		div.container.has-text-centered(id="start")
-			h1.is-size-1.is-family-secondary(id="header") Loading...
+			h1.is-size-1.is-family-secondary(id="header")
 			h1.is-size-1.is-text.is-loading(id="loading") 
 			span(id="subtext")
+
+div#playmodal.modal.has-text-centered.is-active
+	div.modal-content
+		button#play-button.button.is-large.is-loading
+			span.icon
+				i.fas.fa-play(id="play-icon")
 
 nav.navbar.is-fixed-top.is-transparent.is-shadowless.is-hidden(id="top-nav" style='background:transparent')
 	div.navbar-menu.is-shadowless.is-active(style='background:transparent')

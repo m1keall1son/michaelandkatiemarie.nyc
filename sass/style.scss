@@ -53,6 +53,12 @@ $danger: $dusty-salmon;
 .rsvp-outer { border-style:solid; border-color: $dark; border-width:2px; padding:5px; }
 .rsvp-inner { border-style:solid; border-color: $dark; border-width:1px; padding:20px; }
 
+.play-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
 $family-sans-serif: 'Quattrocento Sans', sans-serif;
 $family-secondary: 'Berkshire Swash', cursive;
 $text: $black;

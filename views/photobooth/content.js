@@ -144,8 +144,8 @@ loader.load(
 		texture.minFilter = THREE.LinearFilter;
 		texture.mipmap = true;
 		postcard.edge = new THREE.Mesh( new THREE.PlaneGeometry( 15.58 * 2., 10 * 2. ), new THREE.MeshLambertMaterial({map:texture, transparent: true }) );
-		postcard.edge.material.depthWrite = false;
-		postcard.edge.material.depthTest = false;
+		//postcard.edge.material.depthWrite = false;
+		//postcard.edge.material.depthTest = false;
 		postcard.edge.renderOrder = 4;
 		scene.add(postcard.edge);
 		allLoaded.imgframe = true;
@@ -165,7 +165,7 @@ loader.load(
 		texture.anisotropy = renderer.capabilities.getMaxAnisotropy();
 		//texture.minFilter = THREE.LinearFilter;
 		texture.mipmap = true;
-		postcard.bg = new THREE.Mesh( new THREE.PlaneGeometry( 15.58 * 5., 10 * 5. ), new THREE.MeshLambertMaterial({map:texture}) );
+		postcard.bg = new THREE.Mesh( new THREE.PlaneGeometry( 15.58 * 6., 10 * 6. ), new THREE.MeshLambertMaterial({map:texture}) );
 		postcard.bg.position.z = -20;
 		postcard.bg.renderOrder = 3;
 		scene.add( postcard.bg );
@@ -214,7 +214,7 @@ loader.load(
 );
 
 loader.load(
-	'../../../photobooth/assets/back.jpg',
+	'../../../photobooth/assets/back.png',
 	function ( texture ) {
 		texture.anisotropy = renderer.capabilities.getMaxAnisotropy();
 		texture.minFilter = THREE.LinearFilter;
@@ -230,6 +230,8 @@ loader.load(
 		console.error( 'An error happened.' );
 	}
 );
+
+scene.add(postcard.back);
 
 var maskUniforms = {
 	u_radius: { type: "ve2", value: new THREE.Vector2() }
@@ -324,16 +326,19 @@ function update()
 	postcard.buildings.rotation.set(0, -cardRot,0)
 	postcard.bridge.rotation.set(0, -cardRot,0)
 	postcard.mask.rotation.set(0, -cardRot,0)
-	postcard.us.rotation.set(0,Math.PI - cardRot,0)
+	if(postcard.us)
+		postcard.us.rotation.set(0,Math.PI - cardRot,0)
 	postcard.back.rotation.set(0,Math.PI - cardRot,0)
 
 	if(cardRot > Math.PI / 2)
 	{
-		postcard.us.visible = false;
+		if(postcard.us)
+			postcard.us.visible = false;
 	}
 	else
 	{
-		postcard.us.visible = true;
+		if(postcard.us)
+			postcard.us.visible = true;
 	}
 	
 }
@@ -358,28 +363,21 @@ function run(event)
 		dkCharacter.rotation.set( 0.3, Math.PI, 0);
 		// dkCharacter.rotation.y = Math.PI;
 		dkCharacter.position.set( 0, 1.0, -2.5 );
-		dkCharacter.scale.set(14,14,14)
+		dkCharacter.scale.set(25,25,25)
 		// Depthkit video playback control
 		depthkit.video.muted = "muted"; // Necessary for auto-play in chrome now
 		depthkit.setLoop( true );
-		depthkit.play();
 		//Add the character to the scene
 		postcard.us.position.y = -3
+		postcard.us.renderOrder = 4
 		scene.add(postcard.us);
 		allLoaded.dk = true;
 	});
 
-	if(!allLoaded.loaded())
+	depthkit.video.oncanplay = function()
 	{
-		waitInterval = setInterval(()=>{
-			console.log("waiting!")
-			console.log(allLoaded)
-			if(allLoaded.loaded())
-				console.log("DONE!")
-				clearInterval(waitInterval);
-				run();
-		}, 50);
-		return;
+		$("#play-button").toggleClass("is-loading")
+		$("#play-button").click(onPlay)
 	}
 
 	let loadsection = document.getElementById("load-section")
@@ -406,8 +404,6 @@ function run(event)
 	fitCameraToObject(camera, postcard.edge);
 
 	content.appendChild( renderer.domElement );
-	
-	audio.play();
 
 	draw();
 	if(event){
@@ -415,6 +411,13 @@ function run(event)
 		event.preventDefault()
 	}
 
+}
+
+function onPlay()
+{
+	$("#playmodal").toggleClass("is-active")
+	audio.play();
+	depthkit.play();
 }
 
 function mute()
@@ -548,12 +551,6 @@ function loaded()
 	}
 	else
 	{
-		header.innerHTML = "Click to Start";
-		sub.innerHTML = "There will be sound, plz adjust volume";
-		gif.parentNode.removeChild(gif);
-
-		$(document).on('click touch', function (event) {
-			if(!started) run()
-		})
+		if(!started) run()
 	}
 }
